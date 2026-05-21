@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-page: #0F0D17;
+  --color-card: #1A1D27;
+  --color-card-alt: #17141F;
+  --color-card-hover: #1F2334;
+  --color-accent: #7C3AED;
+  --color-accent-light: #9061F9;
+  --color-biz-green: #00E87A;
+  --color-biz-amber: #F5A623;
+  --color-biz-red: #FF4757;
+  --color-biz-blue: #4A9EFF;
+  --color-biz-muted: #8B8FA8;
+  --font-family-sans: 'DM Sans', system-ui, sans-serif;
+  --font-family-mono: 'DM Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0F0D17;
+  color: #ccc3d8;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
