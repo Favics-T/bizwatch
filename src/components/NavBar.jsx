@@ -37,7 +37,8 @@ export default function NavBar({ onOpenSidebar }) {
             </svg>
             <span className="text-xs text-slate-500">Search analytics or reports...</span>
           </div>
-          <div className="hidden sm:flex min-w-0 flex-wrap items-center gap-1 overflow-x-auto ml-2">
+
+          {/* <div className="hidden sm:flex min-w-0 flex-wrap items-center gap-1 overflow-x-auto ml-2">
             {navLinks.map(({ label, to }) => (
               <NavLink
                 key={label}
@@ -53,7 +54,8 @@ export default function NavBar({ onOpenSidebar }) {
                 {label}
               </NavLink>
             ))}
-          </div>
+          </div> */}
+
         </div>
 
         {/* Right: bell + user */}
