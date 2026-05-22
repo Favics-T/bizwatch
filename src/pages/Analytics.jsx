@@ -118,15 +118,20 @@ export default function Analytics() {
       )}
 
       {/* Three-column panel grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 lg:grid-col-3 gap-5">
         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
           <InsightPanel insights={data?.insights} loading={loading} />
         </div>
+        
+         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
+          <AlertPanel alerts={data?.alerts} loading={loading} />
+        </div>
+        
+      </div>
+      <div className="">
+       
         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
           <PredictionPanel predictions={data?.predictions} loading={loading} />
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
-          <AlertPanel alerts={data?.alerts} loading={loading} />
         </div>
       </div>
     </div>
