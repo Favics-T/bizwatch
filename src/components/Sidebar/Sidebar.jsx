@@ -8,7 +8,7 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-57.5 transform border-r border-white/10 bg-[#17141f] px-6 py-7 transition duration-300 ease-in-out sm:relative sm:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-57.5 transform border-r border-white/10 bg-[#17141f] px-6 py-7 transition duration-300 ease-in-out sm:relative sm:translate-x-0 sm:h-full sm:flex sm:flex-col sm:overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col flex-1 gap-8">
           <div className="hidden sm:block">
             <Logo />
           </div>
