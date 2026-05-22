@@ -38,7 +38,7 @@ export default function Onboarding() {
                 key={key}
                 type="button"
                 onClick={() => setSelected(key)}
-                className="flex flex-col items-center gap-3 rounded-2xl border p-6 transition focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                className="flex flex-col items-center gap-3 rounded-2xl border p-6 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/30"
                 style={{
                   borderColor: isSelected ? '#7C3AED' : 'rgba(255,255,255,0.1)',
                   background: isSelected ? 'rgba(124,58,237,0.08)' : 'rgba(255,255,255,0.03)',
@@ -68,7 +68,7 @@ export default function Onboarding() {
           type="button"
           onClick={handleContinue}
           disabled={!selected}
-          className="w-full bg-violet-600 text-white font-semibold py-3.5 rounded-xl hover:bg-violet-500 transition disabled:opacity-40 disabled:cursor-not-allowed text-sm shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)]"
+          className="w-full bg-violet-600 text-white font-semibold py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-sm shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)]"
         >
           Continue to Dashboard
         </button>

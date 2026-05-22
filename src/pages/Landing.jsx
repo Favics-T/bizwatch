@@ -53,7 +53,7 @@ export default function Landing() {
         <button
           type="button"
           onClick={() => navigate('/connect')}
-          className="text-sm font-medium text-slate-300 hover:text-white transition"
+          className="text-sm font-medium text-slate-300 hover:text-white transition cursor-pointer"
         >
           Sign in
         </button>
@@ -76,7 +76,7 @@ export default function Landing() {
         <button
           type="button"
           onClick={() => navigate('/connect')}
-          className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
+          className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
           Connect your Google Workspace — it's free
         </button>
@@ -147,7 +147,7 @@ export default function Landing() {
         <button
           type="button"
           onClick={() => navigate('/connect')}
-          className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
+          className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
           Connect your Google Workspace — it's free
         </button>

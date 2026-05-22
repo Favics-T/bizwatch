@@ -82,7 +82,7 @@ export default function NewChat() {
             key={title}
             type="button"
             onClick={() => handleSuggestion(desc)}
-            className="group text-left rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition hover:border-violet-400/30 hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+            className="group text-left rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition cursor-pointer hover:border-violet-400/30 hover:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-violet-500/30"
           >
             <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 text-violet-300 mb-3 group-hover:bg-violet-500/20 transition">
               <Icon size={18} />
@@ -98,7 +98,7 @@ export default function NewChat() {
         <div className="relative flex items-end gap-3 rounded-2xl border border-white/10 bg-[#1b162b] px-4 py-3 focus-within:border-violet-400/40 focus-within:ring-2 focus-within:ring-violet-500/10 transition">
           <button
             type="button"
-            className="shrink-0 text-slate-500 hover:text-slate-300 transition pb-0.5"
+            className="shrink-0 text-slate-500 hover:text-slate-300 transition cursor-pointer pb-0.5"
           >
             <Paperclip size={18} />
           </button>
@@ -121,7 +121,7 @@ export default function NewChat() {
               type="button"
               onClick={handleSend}
               disabled={!input.trim()}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-violet-600 text-white disabled:opacity-40 hover:bg-violet-500 transition shadow-[0_4px_16px_-4px_rgba(124,58,237,0.6)]"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-violet-600 text-white disabled:opacity-40 hover:bg-violet-500 transition cursor-pointer shadow-[0_4px_16px_-4px_rgba(124,58,237,0.6)]"
             >
               <Send size={15} />
             </button>
