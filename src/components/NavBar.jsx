@@ -26,7 +26,7 @@ export default function NavBar({ onOpenSidebar }) {
           <button
             type="button"
             onClick={onOpenSidebar}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-white/5 text-[#ccc3d8] shadow-sm shadow-black/20 transition hover:bg-white/10 hover:text-white sm:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-white/5 text-[#ccc3d8] shadow-sm shadow-black/20 transition cursor-pointer hover:bg-white/10 hover:text-white sm:hidden"
           >
             <Menu size={18} />
           </button>
@@ -44,7 +44,7 @@ export default function NavBar({ onOpenSidebar }) {
                 key={label}
                 to={to}
                 className={({ isActive }) =>
-                  `relative rounded-full px-3 py-2 text-[13px] font-medium transition ${
+                  `relative rounded-full px-3 py-2 text-[13px] font-medium transition cursor-pointer ${
                     isActive
                       ? 'text-white after:absolute after:left-1/2 after:bottom-0 after:-translate-x-1/2 after:h-0.5 after:w-6 after:rounded-full after:bg-white'
                       : 'text-biz-muted hover:text-white'
@@ -62,7 +62,7 @@ export default function NavBar({ onOpenSidebar }) {
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 text-biz-muted shadow-sm shadow-black/20 transition hover:bg-white/10 hover:text-white"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 text-biz-muted shadow-sm shadow-black/20 transition cursor-pointer hover:bg-white/10 hover:text-white"
           >
             <Bell size={16} />
           </button>
@@ -76,7 +76,7 @@ export default function NavBar({ onOpenSidebar }) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition cursor-pointer"
                 title="Logout"
               >
                 <LogOut size={13} />
