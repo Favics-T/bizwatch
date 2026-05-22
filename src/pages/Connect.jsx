@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { BarChart2, Lock, HardDrive, Mail, Calendar, Shield } from 'lucide-react'
 import { getGoogleAuthUrl } from '../lib/api.js'
 
@@ -22,7 +22,7 @@ export default function Connect() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-[0_12px_40px_-12px_rgba(124,58,237,0.5)] mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-[0_12px_40px_-12px_rgba(124,58,237,0.5)] mb-4">
             <BarChart2 size={26} className="text-white" />
           </div>
           <span className="font-mono font-semibold text-white text-sm tracking-wide">BizWatch</span>
@@ -46,7 +46,7 @@ export default function Connect() {
           {/* Permissions list */}
           <div className="space-y-3 mb-6">
             {perms.map(({ icon: Icon, label, desc }) => (
-              <div
+              <Link to="/new-chat"
                 key={label}
                 className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3"
               >
@@ -61,7 +61,7 @@ export default function Connect() {
                   <Lock size={10} />
                   Read-only
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
