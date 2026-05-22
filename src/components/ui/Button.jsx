@@ -15,7 +15,7 @@ export default function Button({ variant = 'primary', size = 'md', className = '
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-violet-500/30 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/30 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {children}

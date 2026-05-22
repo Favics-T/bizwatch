@@ -26,7 +26,7 @@ export default function SidebarNavlinks() {
           <NavLink
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-4 py-3 text-[12px] font-medium leading-[16.8px] tracking-[0.14px] transition ${
+              `flex items-center gap-3 rounded-xl px-4 py-3 text-[12px] font-medium leading-[16.8px] tracking-[0.14px] transition cursor-pointer ${
                 isActive
                   ? 'bg-violet-500/20 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)]'
                   : 'text-[#ccc3d8] hover:bg-white/10 hover:text-white'

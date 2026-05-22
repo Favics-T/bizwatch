@@ -1,71 +1,93 @@
 import { useMemo, useState } from 'react'
-import { Activity, Briefcase, FileText, Lightbulb, MessageSquare } from 'lucide-react'
+import {
+  Activity,
+  BarChart2,
+  BookOpen,
+  Briefcase,
+  Bug,
+  Database,
+  DollarSign,
+  Lightbulb,
+  MessageSquare,
+  Palette,
+  Rocket,
+  Shield,
+  TrendingUp,
+  Users,
+  Megaphone,
+} from 'lucide-react'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import SectionHeader from '../components/ui/SectionHeader'
 import HistorySearch from '../components/history/HistorySearch'
 import HistorySection from '../components/history/HistorySection'
+import { chatHistory } from '../data/chat-history'
+import {ICON_RULES }from '../data/icon-rules'
 
-const historyGroups = [
-  {
-    title: 'Today',
-    items: [
-      {
-        id: 'q3-growth',
-        icon: <Activity size={22} />,
-        iconColor: 'bg-violet-500',
-        title: 'Q3 Market Growth Projections',
-        subtitle: 'Read on the recent dataset, the projected growth for the retail sector shows a 12% increase.',
-        time: '11:40 AM',
-      },
-      {
-        id: 'swot-analysis',
-        icon: <Lightbulb size={22} />,
-        iconColor: 'bg-fuchsia-500',
-        title: 'Competition SWOT Analysis',
-        subtitle: 'Summarize the main threats identified in the competitive landscape report for Brand X.',
-        time: '09:15 AM',
-      },
-    ],
-  },
-  {
-    title: 'Yesterday',
-    items: [
-      {
-        id: 'roadmap-ideas',
-        icon: <Briefcase size={22} />,
-        iconColor: 'bg-sky-500',
-        title: 'Product Roadmap Ideas',
-        subtitle: 'Let’s explore new product features for the enterprise dashboard expansion plan.',
-        time: 'Yesterday',
-      },
-    ],
-  },
-  {
-    title: 'Last Days',
-    items: [
-      {
-        id: 'api-debug',
-        icon: <FileText size={22} />,
-        iconColor: 'bg-emerald-500',
-        title: 'API Integration Debugging',
-        subtitle: 'Fixing a 403 Forbidden error when attempting to fetch the latest analytics stream.',
-        time: 'Oct 24',
-      },
-      {
-        id: 'user-persona',
-        icon: <MessageSquare size={22} />,
-        iconColor: 'bg-amber-500',
-        title: 'User Persona Development',
-        subtitle: 'Define three primary user personas for a FinTech platform targeting Gen Z investors.',
-        time: 'Oct 21',
-      },
-    ],
-  },
-]
 
+
+function resolveIconAndColor(title, description) {
+  const text = `${title} ${description}`.toLowerCase()
+  for (const rule of ICON_RULES) {
+    if (rule.keywords.some((kw) => text.includes(kw))) {
+      const Icon = rule.icon
+      return { icon: <Icon size={22} />, iconColor: rule.color }
+    }
+  }
+  const Icon = Activity
+  return { icon: <Icon size={22} />, iconColor: 'bg-violet-500' }
+}
+
+// ─── Date grouping ───────────────────────────────────────────────────────────
+const GROUP_ORDER = ['Today', 'Yesterday', 'This Week', 'Last Week', 'Older']
+
+function dayStart(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+function getDateGroup(dateStr) {
+  const diffDays = Math.round((dayStart(new Date()) - dayStart(new Date(dateStr))) / 86_400_000)
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays <= 6) return 'This Week'
+  if (diffDays <= 13) return 'Last Week'
+  return 'Older'
+}
+
+function formatTime(dateStr) {
+  const date = new Date(dateStr)
+  const diffDays = Math.round((dayStart(new Date()) - dayStart(date)) / 86_400_000)
+  if (diffDays === 0)
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays <= 6)
+    return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 export default function History() {
   const [query, setQuery] = useState('')
+
+  const historyGroups = useMemo(() => {
+    const grouped = {}
+
+    for (const chat of chatHistory) {
+      const group = getDateGroup(chat.updatedAt)
+      if (!grouped[group]) grouped[group] = []
+      const { icon, iconColor } = resolveIconAndColor(chat.title, chat.description)
+      grouped[group].push({
+        id: chat.id,
+        icon,
+        iconColor,
+        title: chat.title,
+        subtitle: chat.description,
+        time: formatTime(chat.updatedAt),
+      })
+    }
+
+    return GROUP_ORDER.filter((g) => grouped[g]).map((g) => ({ title: g, items: grouped[g] }))
+  }, [])
 
   const filteredGroups = useMemo(
     () =>
@@ -77,7 +99,7 @@ export default function History() {
             item.subtitle.toLowerCase().includes(query.toLowerCase()),
         ),
       })),
-    [query],
+    [query, historyGroups],
   )
 
   return (

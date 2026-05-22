@@ -64,7 +64,7 @@ export default function Analytics() {
             type="button"
             onClick={analyse}
             disabled={loading}
-            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white transition disabled:opacity-50"
+            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white transition cursor-pointer disabled:opacity-50"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             Refresh All

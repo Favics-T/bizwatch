@@ -48,7 +48,7 @@ export default function Connect() {
             {perms.map(({ icon: Icon, label, desc }) => (
               <Link to="/new-chat"
                 key={label}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3"
+                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-300 shrink-0">
                   <Icon size={16} />
@@ -78,7 +78,7 @@ export default function Connect() {
           <button
             type="button"
             onClick={handleConnect}
-            className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-3.5 rounded-xl hover:bg-gray-50 transition text-sm shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
+            className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-3.5 rounded-xl hover:bg-gray-50 transition cursor-pointer text-sm shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>

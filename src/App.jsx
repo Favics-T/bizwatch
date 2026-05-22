@@ -40,6 +40,16 @@ function App() {
         }
       />
       <Route
+        path="/chat/:id"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <NewChat />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/analytics"
         element={
           <ProtectedRoute>

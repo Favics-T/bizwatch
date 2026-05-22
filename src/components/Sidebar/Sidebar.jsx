@@ -17,7 +17,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-white/5 text-[#ccc3d8] transition hover:bg-white/10 hover:text-white"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-white/5 text-[#ccc3d8] transition cursor-pointer hover:bg-white/10 hover:text-white"
           >
             <X size={18} />
           </button>
