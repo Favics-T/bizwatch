@@ -12,6 +12,14 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/claude/, '/v1/messages'),
       },
+      '/auth': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/api/analyse': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 })

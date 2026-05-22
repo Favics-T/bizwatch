@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   BarChart2,
   Lock,
@@ -66,10 +66,10 @@ export default function Connect() {
           {/* Permissions list */}
           <div className="space-y-3 mb-6">
             {perms.map(({ icon, label, desc }) => (
-              <Link
-                to="/new-chat"
+              <div
+                onClick={handleConnect}
                 key={label}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 cursor-pointer"
+                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 cursor-pointer hover:border-white/20 transition"
               >
                 <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-300 shrink-0">
                   <Icon icon={icon} size={16} />
@@ -82,7 +82,7 @@ export default function Connect() {
                   <Lock size={10} />
                   Read-only
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
