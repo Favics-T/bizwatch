@@ -53,3 +53,7 @@ p {
 button, input, textarea, select {
   font: inherit;
 }
+
+button, a {
+  cursor: pointer;
+}

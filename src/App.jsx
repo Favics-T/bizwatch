@@ -12,6 +12,7 @@ import Workspace from './pages/Workspace'
 import Settings from './pages/Settings'
 import API from './pages/API'
 import Model from './pages/Model'
+import ChatPage from './pages/ChatPage'
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
         element={
           <ProtectedRoute>
             <AppLayout>
-              <NewChat />
+              <ChatPage />
             </AppLayout>
           </ProtectedRoute>
         }
