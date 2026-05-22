@@ -19,6 +19,17 @@ const suggestions = [
   },
 ]
 
+function handleSend() {
+  if (!input.trim()) return;
+
+  console.log(input);
+
+  // future:
+  // send message to API
+
+  setInput('');
+}
+
 export default function NewChat() {
   const [input, setInput] = useState('')
   const textareaRef = useRef(null)
@@ -28,12 +39,23 @@ export default function NewChat() {
     textareaRef.current?.focus()
   }
 
+  function handleSend() {
+  if (!input.trim()) return;
+
+  console.log(input);
+
+  // future:
+  // send message to API
+
+  setInput('');
+}
+
   function handleKeyDown(e) {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-      e.preventDefault()
-      // send
-    }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    handleSend();
   }
+}
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4 py-12">
@@ -97,6 +119,7 @@ export default function NewChat() {
             </span>
             <button
               type="button"
+              onClick={handleSend}
               disabled={!input.trim()}
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-violet-600 text-white disabled:opacity-40 hover:bg-violet-500 transition shadow-[0_4px_16px_-4px_rgba(124,58,237,0.6)]"
             >
