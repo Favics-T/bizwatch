@@ -1,6 +1,6 @@
 import { Bell, Menu, LogOut } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth.js'
+// import { useAuth } from '../hooks/useAuth.js'
 import { logout } from '../lib/api.js'
 
 const navLinks = [
@@ -10,7 +10,7 @@ const navLinks = [
 ]
 
 export default function NavBar({ onOpenSidebar }) {
-  const { user } = useAuth()
+  // const { user } = useAuth()
   const navigate = useNavigate()
 
   async function handleLogout() {
@@ -66,11 +66,12 @@ export default function NavBar({ onOpenSidebar }) {
           >
             <Bell size={16} />
           </button>
-          {user && (
+          {/* {user && ( */}
             <>
               <img
-                src={user.picture || `https://i.pravatar.cc/40`}
-                alt={user.name}
+                src={`https://i.pravatar.cc/40`}
+                // alt={user.name}
+                alt='Faith Taiwo'
                 className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
               />
               <button
@@ -82,7 +83,7 @@ export default function NavBar({ onOpenSidebar }) {
                 <LogOut size={13} />
               </button>
             </>
-          )}
+          {/* )} */}
         </div>
       </div>
     </header>

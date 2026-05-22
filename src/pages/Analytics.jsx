@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useAuth } from '../hooks/useAuth.js'
+// import { useAuth } from '../hooks/useAuth.js'
 import { useEngines } from '../hooks/useEngines.js'
 import AlertPanel from '../components/AlertPanel.jsx'
 import InsightPanel from '../components/InsightPanel.jsx'
@@ -33,7 +33,7 @@ function StatCard({ icon: Icon, label, value, badge, color = '#7C3AED' }) {
 }
 
 export default function Analytics() {
-  const { user } = useAuth()
+  // const { user } = useAuth()
   const businessType = localStorage.getItem('bizwatch_business_type') ?? 'general'
   const { data, loading, error, lastUpdated, analyse } = useEngines(businessType)
 
