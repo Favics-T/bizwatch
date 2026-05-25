@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 // import { useAuth } from '../hooks/useAuth.js'
 import { useEngines } from '../hooks/useEngines.js'
 import AlertPanel from '../components/AlertPanel.jsx'
@@ -36,10 +37,17 @@ export default function Analytics() {
   // const { user } = useAuth()
   const businessType = localStorage.getItem('bizwatch_business_type') ?? 'general'
   const { data, loading, error, lastUpdated, analyse } = useEngines(businessType)
+  const isFirstLoad = useRef(true)
 
   useEffect(() => {
     analyse()
   }, [analyse])
+
+  useEffect(() => {
+    if (isFirstLoad.current) { isFirstLoad.current = false; return }
+    if (!loading && error) toast.error(error)
+    if (!loading && data && !error) toast.success('Dashboard refreshed')
+  }, [loading])
 
   const insightCount = data?.insights?.insights?.length ?? 0
   const alertCount = data?.alerts?.unread_count ?? 0

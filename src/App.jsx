@@ -13,10 +13,13 @@ import Settings from './pages/Settings'
 import API from './pages/API'
 import Model from './pages/Model'
 import ChatPage from './pages/ChatPage'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   return (
-    <Routes>
+    <>
+    <Toaster />
+        <Routes>
       {/* Public auth flow — no sidebar */}
       <Route path="/" element={<Landing />} />
       <Route path="/connect" element={<Connect />} />
@@ -124,6 +127,7 @@ function App() {
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/new-chat" replace />} />
     </Routes>
+    </>
   )
 }
 

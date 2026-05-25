@@ -61,6 +61,7 @@ Include 2–4 insights when the question is about the business. Return "insights
 export async function sendChatMessage(messages) {
   const res = await fetch(CLAUDE_API_URL, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

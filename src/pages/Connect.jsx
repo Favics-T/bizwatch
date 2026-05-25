@@ -4,6 +4,7 @@ import {
   Lock,
   Shield,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { getGoogleAuthUrl } from "../lib/api.js";
 import { Icon } from "@iconify/react";
 
@@ -32,8 +33,11 @@ export default function Connect() {
   const hasError = params.get("error") === "auth_failed";
 
   function handleConnect() {
-    window.location.href = getGoogleAuthUrl();
-    // navigate('/new-chat')
+    try {
+      window.location.href = getGoogleAuthUrl()
+    } catch (err) {
+      toast.error(err.message ?? 'Connection failed. Please try again.')
+    }
   }
 
   return (
