@@ -40,10 +40,6 @@ const engines = [
 export default function Landing() {
   const navigate = useNavigate()
 
-  const handleNext = () => {
-    navigate('/new-chat')
-  }
-
   return (
     <div className="min-h-screen bg-[#0F0D17] text-white">
       {/* Nav */}
@@ -56,7 +52,7 @@ export default function Landing() {
         </div>
         <button
           type="button"
-          onClick={() => navigate('/new-chat')}
+          onClick={() => navigate('/connect')}
           className="text-sm font-medium text-slate-300 hover:text-white transition cursor-pointer"
         >
           Sign in
@@ -79,7 +75,7 @@ export default function Landing() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/new-chat')}
+          onClick={() => navigate('/connect')}
           className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
           Connect your Google Workspace — it's free
@@ -116,7 +112,7 @@ export default function Landing() {
           {engines.map(({ label, color, sample }) => (
             <div
               key={label}
-              className="rounded-2xl border border-white/10 bg-white/3 p-6"
+              className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"
               style={{ borderTopColor: color, borderTopWidth: '2px' }}
             >
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color }}>
@@ -130,7 +126,7 @@ export default function Landing() {
 
       {/* Persona */}
       <section className="max-w-2xl mx-auto px-6 pb-24">
-        <div className="rounded-2xl border border-white/10 bg-white/3 p-8 text-center">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
           <p className="text-lg text-slate-200 leading-relaxed italic mb-4">
             "Built for Chisom — Lagos logistics founder, 8-person team, no time to audit her own
             spreadsheets."
@@ -150,7 +146,7 @@ export default function Landing() {
       <section className="text-center px-6 pb-24">
         <button
           type="button"
-          onClick={() => navigate('/new-chat')}
+          onClick={() => navigate('/connect')}
           className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
           Connect your Google Workspace — it's free
