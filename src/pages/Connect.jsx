@@ -34,12 +34,12 @@ export default function Connect() {
   const hasError = params.get("error") === "auth_failed";
 
   function handleConnect() {
-    // try {
-    //   window.location.href = getGoogleAuthUrl()
-    // } catch (err) {
-    //   toast.error(err.message ?? 'Connection failed. Please try again.')
-    // }
-    navigate('/ai-chat')
+    try {
+      window.location.href = getGoogleAuthUrl()
+    } catch (err) {
+      toast.error(err.message ?? 'Connection failed. Please try again.')
+    }
+    // navigate('/ai-chat')
   }
 
   return (
