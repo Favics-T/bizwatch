@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
-import { useAuth } from '../hooks/useAuth.js'
+import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
+// import { useAuth } from '../hooks/useAuth.js'
 import { useEngines } from '../hooks/useEngines.js'
 import AlertPanel from '../components/AlertPanel.jsx'
 import InsightPanel from '../components/InsightPanel.jsx'
@@ -33,13 +34,20 @@ function StatCard({ icon: Icon, label, value, badge, color = '#7C3AED' }) {
 }
 
 export default function Analytics() {
-  const { user } = useAuth()
+  // const { user } = useAuth()
   const businessType = localStorage.getItem('bizwatch_business_type') ?? 'general'
   const { data, loading, error, lastUpdated, analyse } = useEngines(businessType)
+  const isFirstLoad = useRef(true)
 
   useEffect(() => {
     analyse()
   }, [analyse])
+
+  useEffect(() => {
+    if (isFirstLoad.current) { isFirstLoad.current = false; return }
+    if (!loading && error) toast.error(error)
+    if (!loading && data && !error) toast.success('Dashboard refreshed')
+  }, [loading])
 
   const insightCount = data?.insights?.insights?.length ?? 0
   const alertCount = data?.alerts?.unread_count ?? 0
@@ -118,15 +126,20 @@ export default function Analytics() {
       )}
 
       {/* Three-column panel grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 lg:grid-col-3 gap-5">
         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
           <InsightPanel insights={data?.insights} loading={loading} />
         </div>
+        
+         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
+          <AlertPanel alerts={data?.alerts} loading={loading} />
+        </div>
+        
+      </div>
+      <div className="">
+       
         <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
           <PredictionPanel predictions={data?.predictions} loading={loading} />
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
-          <AlertPanel alerts={data?.alerts} loading={loading} />
         </div>
       </div>
     </div>

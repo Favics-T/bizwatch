@@ -13,7 +13,7 @@ export function useEngines(businessType) {
     setError(null)
     try {
       const result =
-        import.meta.env.VITE_USE_MOCK === 'true'
+        import.meta.env.VITE_USE_MOCK === 'false'
           ? await new Promise((res) => setTimeout(() => res(mockData), 1200))
           : await runAnalysis(businessType)
       setData(result)

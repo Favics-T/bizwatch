@@ -22,7 +22,8 @@ import SectionHeader from '../components/ui/SectionHeader'
 import HistorySearch from '../components/history/HistorySearch'
 import HistorySection from '../components/history/HistorySection'
 import { chatHistory } from '../data/chat-history'
-import {ICON_RULES }from '../data/icon-rules'
+import { ICON_RULES } from '../data/icon-rules'
+import { loadChats } from '../services/chatStorage'
 
 
 
@@ -38,7 +39,7 @@ function resolveIconAndColor(title, description) {
   return { icon: <Icon size={22} />, iconColor: 'bg-violet-500' }
 }
 
-// ─── Date grouping ───────────────────────────────────────────────────────────
+// ─── Date grouping 
 const GROUP_ORDER = ['Today', 'Yesterday', 'This Week', 'Last Week', 'Older']
 
 function dayStart(date) {
@@ -72,16 +73,27 @@ export default function History() {
   const historyGroups = useMemo(() => {
     const grouped = {}
 
-    for (const chat of chatHistory) {
+    // Saved chats from localStorage — shown first, most recent first
+    const savedChats = loadChats().map((c) => ({
+      id: c.id,
+      title: c.title,
+      description: c.lastMessage ?? '',
+      updatedAt: c.updatedAt,
+      _saved: true,
+    }))
+
+    const allChats = [...savedChats, ...chatHistory]
+
+    for (const chat of allChats) {
       const group = getDateGroup(chat.updatedAt)
       if (!grouped[group]) grouped[group] = []
-      const { icon, iconColor } = resolveIconAndColor(chat.title, chat.description)
+      const { icon, iconColor } = resolveIconAndColor(chat.title, chat.description ?? '')
       grouped[group].push({
         id: chat.id,
         icon,
         iconColor,
         title: chat.title,
-        subtitle: chat.description,
+        subtitle: chat.description ?? '',
         time: formatTime(chat.updatedAt),
       })
     }

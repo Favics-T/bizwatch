@@ -15,6 +15,6 @@ export default function ProtectedRoute({ children }) {
     )
   }
 
-  if (!user) return <Navigate to="/connect" replace />
+  // if (!user) return <Navigate to="/connect" replace />
   return children
 }
