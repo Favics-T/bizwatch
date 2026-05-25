@@ -1,12 +1,15 @@
 import { HelpCircle, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { logout } from '../../lib/api.js'
+import toast from 'react-hot-toast'
+import { useAuth } from '../../hooks/useAuth.js'
 
 export default function Bottom() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
 
   async function handleLogout() {
     await logout()
+    toast.success('Logged out successfully')
     navigate('/')
   }
 

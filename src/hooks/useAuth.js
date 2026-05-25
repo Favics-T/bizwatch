@@ -1,21 +1,13 @@
-import { useState, useEffect } from 'react'
-import { getMe } from '../lib/api.js'
-import { mockUser } from '../lib/mockData.js'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutUser } from '../store/authSlice.js'
 
 export function useAuth() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+  const { user, loading, error } = useSelector((state) => state.auth)
 
-  useEffect(() => {
-    if (import.meta.env.VITE_USE_MOCK === 'true') {
-      setUser(mockUser)
-      setLoading(false)
-      return
-    }
-    getMe()
-      .then(setUser)
-      .finally(() => setLoading(false))
-  }, [])
+  function logout() {
+    dispatch(logoutUser())
+  }
 
-  return { user, loading }
+  return { user, loading, error, logout }
 }
