@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BarChart2, TrendingUp, FileText, TrendingDown, Send, Paperclip, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { sendChatMessage } from '../services/bizwatchApi.js'
 
 const SUGGESTIONS = [
@@ -44,6 +45,7 @@ export default function NewChat() {
       ]
       navigate(`/chat/${chatId}`, { state: { initialMessages, chatTitle: label } })
     } catch (err) {
+      toast.error(err.message ?? 'Failed to send message. Please try again.')
       setLoading(false)
     }
   }

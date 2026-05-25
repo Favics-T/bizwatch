@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import { CheckCircle2, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -83,10 +84,12 @@ export default function WorkspaceConnector({
           ),
         }))
         setGlobalLoading(false)
+        toast.success('All services connected!')
       }
       // Real OAuth path — browser is navigating away; no further state needed
     } catch {
       setError('Connection failed. Please try again.')
+      toast.error('Connection failed. Please try again.')
       setStatuses((prev) => ({
         ...prev,
         ...Object.fromEntries(

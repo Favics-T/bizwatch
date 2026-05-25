@@ -9,10 +9,12 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { sendChatMessage } from "../services/bizwatchApi.js";
 import { chatHistory } from "../data/chat-history.js";
 import { saveChat, loadChat } from "../services/chatStorage.js";
 import Button from "../components/ui/Button.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 
 // ─── Insight card styles ──────────────────────────────────────────────────────
 
@@ -78,14 +80,11 @@ function UserMessage({ content }) {
 }
 
 function AssistantMessage({ content, insights, error }) {
-  const [copied, setCopied] = useState(false);
-
   function handleCopy() {
     if (content) {
       navigator.clipboard.writeText(content).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      });
+        toast.success('Copied to clipboard')
+      })
     }
   }
 
@@ -127,7 +126,7 @@ function AssistantMessage({ content, insights, error }) {
                 className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] text-slate-500 hover:text-slate-300 hover:bg-white/5 transition"
               >
                 <Copy size={12} />
-                {copied ? "Copied" : "Copy"}
+                Copy
               </button>
               <button
                 type="button"
@@ -207,7 +206,9 @@ export default function ChatPage() {
     // Brand new chat — messages were already fetched in NewChat before navigating here
     const { initialMessages, chatTitle: title } = location.state ?? {};
     if (initialMessages?.length) {
-      setChatTitle(title ?? initialMessages[0]?.content?.slice(0, 50) ?? "Chat");
+      setChatTitle(
+        title ?? initialMessages[0]?.content?.slice(0, 50) ?? "Chat",
+      );
       setMessages(initialMessages);
     } else {
       navigate("/new-chat", { replace: true });
@@ -228,7 +229,7 @@ export default function ChatPage() {
     try {
       const result = await sendChatMessage(
         nextMessages
-          .filter((m) => typeof m.content === 'string' && m.content.length > 0)
+          .filter((m) => typeof m.content === "string" && m.content.length > 0)
           .map((m) => ({ role: m.role, content: m.content })),
       );
       setMessages((prev) => [
@@ -240,6 +241,7 @@ export default function ChatPage() {
         },
       ]);
     } catch (err) {
+      toast.error(err.message ?? 'Failed to get a response. Please try again.')
       setMessages((prev) => [
         ...prev,
         {
@@ -283,7 +285,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden -mx-6 -my-6 sm:-mx-8 xl:-mx-10">
-      <div className="flex justify-between items-center">
         {/* ── Chat header ──────────────────────────────────────────────── */}
         <div className="shrink-0 flex items-center gap-3 px-6 sm:px-8 xl:px-10 py-4 border-b border-white/10 bg-[#0f0d17]">
           <button
@@ -300,11 +301,7 @@ export default function ChatPage() {
             {chatTitle}
           </h2>
         </div>
-        <Button variant="secondary" size="lg" className="hidden sm:inline-flex">
-          Connect
-        </Button>
-      </div>
-
+     
       {/* ── Scrollable message thread ─────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto scrollbar-none">
         <div className="max-w-2xl mx-auto w-full px-6 sm:px-8 pt-8 pb-6 space-y-6">

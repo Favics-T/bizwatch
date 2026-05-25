@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "dev": "node --watch src/index.js",
+    "predev": "npx kill-port 3000 --silent || true",
+    "dev": "nodemon src/index.js",
     "kill-port": "for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :3000') do taskkill /F /PID %a 2>nul & exit 0",
     "start": "node src/index.js",
     "db:push": "prisma db push",
@@ -22,6 +23,7 @@
     "pg": "^8.13.0"
   },
   "devDependencies": {
+    "nodemon": "^3.1.14",
     "prisma": "^6.0.0"
   }
 }

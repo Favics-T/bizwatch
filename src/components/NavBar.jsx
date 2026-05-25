@@ -1,21 +1,21 @@
-import { Bell, Menu, LogOut } from 'lucide-react'
-import { NavLink, useNavigate } from 'react-router-dom'
-// import { useAuth } from '../hooks/useAuth.js'
-import { logout } from '../lib/api.js'
+import { Bell, Menu, LogOut } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
+import { logout } from "../lib/api.js";
 
 const navLinks = [
-  { label: 'Models', to: '/model' },
-  { label: 'Knowledge Base', to: '/knowledgebase' },
-  { label: 'API', to: '/api' },
-]
+  { label: "Models", to: "/model" },
+  { label: "Knowledge Base", to: "/knowledgebase" },
+  { label: "API", to: "/api" },
+];
 
 export default function NavBar({ onOpenSidebar }) {
-  // const { user } = useAuth()
-  const navigate = useNavigate()
-
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  console.log(user);
   async function handleLogout() {
-    await logout()
-    navigate('/')
+    await logout();
+    navigate("/");
   }
 
   return (
@@ -32,10 +32,21 @@ export default function NavBar({ onOpenSidebar }) {
           </button>
           {/* Search bar — visible on md+ */}
           <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2 min-w-55">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-500">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-slate-500"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
-            <span className="text-xs text-slate-500">Search analytics or reports...</span>
+            <span className="text-xs text-slate-500">
+              Search analytics or reports...
+            </span>
           </div>
 
           {/* <div className="hidden sm:flex min-w-0 flex-wrap items-center gap-1 overflow-x-auto ml-2">
@@ -55,7 +66,6 @@ export default function NavBar({ onOpenSidebar }) {
               </NavLink>
             ))}
           </div> */}
-
         </div>
 
         {/* Right: bell + user */}
@@ -67,25 +77,25 @@ export default function NavBar({ onOpenSidebar }) {
             <Bell size={16} />
           </button>
           {/* {user && ( */}
-            <>
-              <img
-                src={`https://i.pravatar.cc/40`}
-                // alt={user.name}
-                alt='Faith Taiwo'
-                className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
-              />
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition cursor-pointer"
-                title="Logout"
-              >
-                <LogOut size={13} />
-              </button>
-            </>
+          <>
+            <img
+              src={user?.picture ||`https://i.pravatar.cc/40`}
+              alt={user.name || "User Avatar"}
+              alt="User Avatar"
+              className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
+            />
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition cursor-pointer"
+              title="Logout"
+            >
+              <LogOut size={13} />
+            </button>
+          </>
           {/* )} */}
         </div>
       </div>
     </header>
-  )
+  );
 }
