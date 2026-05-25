@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Bell, TrendingUp, AlertCircle, Users, DollarSign } from 'lucide-react'
+import { BarChart2, AlertCircle, Users, DollarSign } from 'lucide-react'
 
 const problems = [
   {
