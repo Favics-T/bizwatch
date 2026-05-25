@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart2,
   Lock,
@@ -27,11 +27,13 @@ const perms = [
 
 export default function Connect() {
   const location = useLocation();
+  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const hasError = params.get("error") === "auth_failed";
 
   function handleConnect() {
-    window.location.href = getGoogleAuthUrl();
+    // window.location.href = getGoogleAuthUrl();
+    navigate('/new-chat')
   }
 
   return (
