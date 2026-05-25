@@ -2,11 +2,10 @@ const express = require('express')
 const cors = require('cors')
 const session = require('express-session')
 const { google } = require('googleapis')
-require('dotenv/config')
 
 const app = express()
 
-app.use(express.json())  // ← required for req.body to work
+app.use(express.json())
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,
@@ -18,8 +17,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }
 }))
@@ -94,9 +93,5 @@ app.get('/auth/token', (req, res) => {
   if (!req.session?.googleToken) return res.status(401).json({ error: 'Not authenticated' })
   res.json({ token: req.session.googleToken })
 })
-
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3001, () => console.log('Server running on http://localhost:3001'))
-}
 
 module.exports = app
