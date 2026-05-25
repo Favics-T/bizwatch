@@ -1,6 +1,3 @@
-// Requests go through the Vite dev proxy (/api/claude → https://api.anthropic.com/v1/messages)
-// to avoid CORS. In production, replace with a real backend route that holds the key server-side.
-
 const CLAUDE_API_URL = '/api/claude'
 const MODEL = 'claude-haiku-4-5-20251001'
 
@@ -62,22 +59,10 @@ Insight type rules:
 Include 2–4 insights when the question is about the business. Return "insights": [] for greetings, how-to questions, or questions with no actionable signals. Keep each body under 30 words.`
 
 export async function sendChatMessage(messages) {
-  // const apiKey = import.meta.env.VITE_CLAUDE_API_KEY
-
-  // if (!apiKey) {
-  //   throw new Error('VITE_CLAUDE_API_KEY is not set. Add it to your .env file.')
-  // }
-
-  const googleToken = localStorage.getItem('google_token')
-
-  const res = await fetch('/api/claude', {
+  const res = await fetch(CLAUDE_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(googleToken && { 'x-google-token': googleToken }),
-      // 'x-api-key': apiKey,
-      // 'anthropic-version': '2023-06-01',
-      // 'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: MODEL,

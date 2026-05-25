@@ -13,7 +13,7 @@ const app = express()
 const PORT = process.env.PORT ?? 3000
 
 const PgSession = connectPgSimple(session)
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 10000 })
 
 app.use(
   cors({
