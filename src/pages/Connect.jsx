@@ -7,6 +7,7 @@ import {
 import toast from "react-hot-toast";
 import { getGoogleAuthUrl } from "../lib/api.js";
 import { Icon } from "@iconify/react";
+// import { useNavigate } from 'react-router-dom'
 
 const perms = [
   {
@@ -33,11 +34,12 @@ export default function Connect() {
   const hasError = params.get("error") === "auth_failed";
 
   function handleConnect() {
-    try {
-      window.location.href = getGoogleAuthUrl()
-    } catch (err) {
-      toast.error(err.message ?? 'Connection failed. Please try again.')
-    }
+    // try {
+    //   window.location.href = getGoogleAuthUrl()
+    // } catch (err) {
+    //   toast.error(err.message ?? 'Connection failed. Please try again.')
+    // }
+    navigate('/ai-chat')
   }
 
   return (
