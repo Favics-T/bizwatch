@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BarChart2, Bell, TrendingUp, AlertCircle, Users, DollarSign } from 'lucide-react'
+import { BarChart2, AlertCircle, Users, DollarSign } from 'lucide-react'
 
 const problems = [
   {
@@ -45,7 +45,7 @@ export default function Landing() {
       {/* Nav */}
       <header className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
             <BarChart2 size={16} className="text-white" />
           </div>
           <span className="font-mono font-semibold text-white text-sm">BizWatch</span>

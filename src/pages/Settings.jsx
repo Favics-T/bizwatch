@@ -1,10 +1,618 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../hooks/useAuth.js'
+import { getGoogleAuthUrl } from '../lib/api.js'
+import Button from '../components/ui/Button.jsx'
+import {
+  Mail, HardDrive, Calendar, FileSpreadsheet,
+  Camera, Check, RefreshCw, Trash2, AlertTriangle,
+  ChevronDown, Info,
+} from 'lucide-react'
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const GOOGLE_SERVICES = [
+  { id: 'gmail',    name: 'Gmail',            Icon: Mail,            description: 'Email threads and communication' },
+  { id: 'drive',    name: 'Google Drive',     Icon: HardDrive,       description: 'Files and documents' },
+  { id: 'sheets',   name: 'Google Sheets',    Icon: FileSpreadsheet, description: 'Spreadsheet data' },
+  { id: 'calendar', name: 'Google Calendar',  Icon: Calendar,        description: 'Events and scheduling' },
+]
+
+const INDUSTRIES = ['Logistics', 'Retail', 'Fashion', 'Food & Beverage', 'Consulting', 'Other']
+
+const CURRENCIES = [
+  { value: 'NGN', label: 'NGN (₦)' },
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'GBP', label: 'GBP (£)' },
+]
+
+const DEFAULT_AI_PREFS = {
+  businessName: '',
+  industry: 'Retail',
+  location: '',
+  currency: 'NGN',
+  insightSensitivity: 'Medium',
+  responseStyle: 'Analytical',
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getInitials(name) {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+}
+
+function loadAiPrefs() {
+  try {
+    const raw = localStorage.getItem('bizwatch_ai_prefs')
+    const savedName = localStorage.getItem('bizwatch_business_name') || ''
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return { ...DEFAULT_AI_PREFS, ...parsed, businessName: savedName || parsed.businessName || '' }
+    }
+    return { ...DEFAULT_AI_PREFS, businessName: savedName }
+  } catch {
+    return { ...DEFAULT_AI_PREFS }
+  }
+}
+
+function loadConnectedServices() {
+  try {
+    const raw = localStorage.getItem('bizwatch_connected_services')
+    if (raw) return JSON.parse(raw)
+  } catch {}
+  return { gmail: true, drive: true, sheets: true, calendar: true }
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+function Toast({ message, visible }) {
+  return (
+    <div
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl border border-white/10 bg-[#1b162b] px-4 py-3 text-sm text-white shadow-2xl transition-all duration-300 ${
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+      }`}
+    >
+      <Check size={14} className="text-green-400 shrink-0" />
+      {message}
+    </div>
+  )
+}
+
+// ─── Confirmation Modal ───────────────────────────────────────────────────────
+
+function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+      <div className="relative z-50 w-full max-w-sm rounded-2xl border border-white/10 bg-[#1b162b] p-6 shadow-2xl">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500/10 mt-0.5">
+            <AlertTriangle size={16} className="text-red-400" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-white">{title}</h3>
+            <p className="mt-1 text-sm text-slate-400 leading-relaxed">{description}</p>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 mt-5">
+          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-500 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/30"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section Card ─────────────────────────────────────────────────────────────
+
+function SectionCard({ title, subtitle, children }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <div className="mb-5">
+        <h2 className="text-base font-semibold text-white">{title}</h2>
+        {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+// ─── Input ────────────────────────────────────────────────────────────────────
+
+function Field({ label, children }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+        {label}
+      </label>
+      {children}
+    </div>
+  )
+}
+
+const inputCls =
+  'w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10'
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function Settings() {
+  const { user } = useAuth()
+
+  // Toast
+  const [toast, setToast] = useState({ visible: false, message: '' })
+  const toastTimer = useRef(null)
+
+  function showToast(message) {
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    setToast({ visible: true, message })
+    toastTimer.current = setTimeout(
+      () => setToast(t => ({ ...t, visible: false })),
+      3000,
+    )
+  }
+
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current) }, [])
+
+  // Modal
+  const [modal, setModal] = useState(null) // 'clearHistory' | 'clearPrefs' | 'deleteAccount'
+
+  // ── Profile ──────────────────────────────────────────────────────────────────
+  const [displayName, setDisplayName] = useState('')
+  const [profileDirty, setProfileDirty] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('bizwatch_display_name')
+    setDisplayName(saved || user?.name || '')
+  }, [user])
+
+  function handleNameChange(e) {
+    setDisplayName(e.target.value)
+    setProfileDirty(true)
+  }
+
+  function saveProfile() {
+    localStorage.setItem('bizwatch_display_name', displayName)
+    setProfileDirty(false)
+    showToast('Profile saved')
+  }
+
+  // ── Connected Services ────────────────────────────────────────────────────────
+  const [connected, setConnected] = useState(loadConnectedServices)
+
+  function toggleService(id) {
+    setConnected(prev => {
+      const next = { ...prev, [id]: !prev[id] }
+      localStorage.setItem('bizwatch_connected_services', JSON.stringify(next))
+      return next
+    })
+  }
+
+  function handleSwitchAccount() {
+    window.location.href = getGoogleAuthUrl()
+  }
+
+  function handleAddDrive() {
+    setConnected(prev => {
+      const next = { ...prev, drive: true }
+      localStorage.setItem('bizwatch_connected_services', JSON.stringify(next))
+      return next
+    })
+    showToast('Google Drive connected')
+  }
+
+  // ── AI Preferences ────────────────────────────────────────────────────────────
+  const [aiPrefs, setAiPrefs] = useState(loadAiPrefs)
+
+  function updatePref(key, value) {
+    setAiPrefs(prev => ({ ...prev, [key]: value }))
+  }
+
+  function saveAiPrefs() {
+    const { businessName, ...rest } = aiPrefs
+    localStorage.setItem('bizwatch_ai_prefs', JSON.stringify({ ...rest, businessName }))
+    localStorage.setItem('bizwatch_business_name', businessName)
+    showToast('Preferences saved')
+  }
+
+  // ── Data & Privacy ────────────────────────────────────────────────────────────
+  function confirmClearHistory() {
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('chat_'))
+      .forEach(k => localStorage.removeItem(k))
+    setModal(null)
+    showToast('Chat history cleared')
+  }
+
+  function confirmClearPrefs() {
+    localStorage.removeItem('bizwatch_ai_prefs')
+    localStorage.removeItem('bizwatch_business_name')
+    setAiPrefs({ ...DEFAULT_AI_PREFS })
+    setModal(null)
+    showToast('AI preferences reset')
+  }
+
+  async function confirmDeleteAccount() {
+    const BASE = import.meta.env.VITE_API_URL
+    await fetch(`${BASE}/auth/account`, { method: 'DELETE', credentials: 'include' }).catch(() => {})
+    localStorage.clear()
+    window.location.href = '/'
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 xl:px-10">
-      <h1 className="text-4xl font-semibold text-white">Settings Page</h1>
-      <p className="text-slate-300">Placeholder content for the Settings page.</p>
-    </div>
+    <>
+      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
+        {/* Page header */}
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Settings</h1>
+          <p className="mt-0.5 text-sm text-slate-400">
+            Manage your account, integrations, and AI preferences.
+          </p>
+        </div>
+
+        {/* ── 1. Profile ──────────────────────────────────────────────────────── */}
+        <SectionCard
+          title="Profile"
+          subtitle="Your public display name and account details."
+        >
+          <div className="flex flex-col gap-5">
+            {/* Avatar row */}
+            <div className="flex items-center gap-4">
+              <div className="relative shrink-0">
+                {user?.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    className="h-16 w-16 rounded-full object-cover ring-2 ring-white/10"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-full bg-violet-600/20 ring-2 ring-violet-500/20 flex items-center justify-center">
+                    <span className="text-xl font-bold text-violet-300">
+                      {getInitials(displayName || user?.name)}
+                    </span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  title="Change photo"
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-[#1b162b] text-slate-500 hover:text-white transition cursor-pointer"
+                >
+                  <Camera size={11} />
+                </button>
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-white">
+                  {displayName || user?.name || 'Your Name'}
+                </p>
+                <p className="truncate text-xs text-slate-500">{user?.email || '—'}</p>
+              </div>
+            </div>
+
+            {/* Display name */}
+            <Field label="Display name">
+              <input
+                value={displayName}
+                onChange={handleNameChange}
+                placeholder="Your name"
+                className={inputCls}
+              />
+            </Field>
+
+            {/* Email (read-only) */}
+            <Field label="Email">
+              <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.02] px-3.5 py-2.5">
+                <Mail size={13} className="shrink-0 text-slate-600" />
+                <span className="flex-1 truncate text-sm text-slate-400">
+                  {user?.email || 'Connected via Google'}
+                </span>
+                <span className="shrink-0 rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                  Read-only
+                </span>
+              </div>
+            </Field>
+
+            {/* Save */}
+            <div className="flex justify-end">
+              <div className="relative">
+                {profileDirty && (
+                  <span className="absolute -right-1 -top-1 z-10 h-2.5 w-2.5 rounded-full bg-yellow-400 ring-2 ring-[#0f0d17]" />
+                )}
+                <Button variant="primary" onClick={saveProfile}>
+                  Save changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* ── 2. Connected Accounts ────────────────────────────────────────────── */}
+        <SectionCard
+          title="Connected Accounts"
+          subtitle="Manage your Google Workspace integrations."
+        >
+          <div className="flex flex-col gap-2">
+            {GOOGLE_SERVICES.map(({ id, name, Icon, description }) => (
+              <div
+                key={id}
+                className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <Icon size={15} className="text-slate-400" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white">{name}</p>
+                  <p className="truncate text-xs text-slate-500">{description}</p>
+                </div>
+
+                <span
+                  className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                    connected[id]
+                      ? 'bg-green-500/10 text-green-400'
+                      : 'bg-white/5 text-slate-500'
+                  }`}
+                >
+                  {connected[id] ? 'Connected' : 'Not connected'}
+                </span>
+
+                <Button
+                  variant={connected[id] ? 'outline' : 'primary'}
+                  size="md"
+                  onClick={() => toggleService(id)}
+                  className={`shrink-0 !px-3 !py-1.5 text-xs ${
+                    connected[id]
+                      ? '!text-red-400 hover:!border-red-500/30 hover:!bg-red-500/5'
+                      : ''
+                  }`}
+                >
+                  {connected[id] ? 'Disconnect' : 'Connect'}
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={handleSwitchAccount}>
+              <RefreshCw size={13} />
+              Switch Google Account
+            </Button>
+            {!connected.drive && (
+              <Button variant="outline" onClick={handleAddDrive}>
+                <HardDrive size={13} />
+                Add Google Drive
+              </Button>
+            )}
+          </div>
+        </SectionCard>
+
+        {/* ── 3. AI Preferences ────────────────────────────────────────────────── */}
+        <SectionCard
+          title="AI Preferences"
+          subtitle="Customize how BizWatch AI understands your business."
+        >
+          <div className="flex flex-col gap-4">
+            <Field label="Business name">
+              <input
+                value={aiPrefs.businessName}
+                onChange={e => updatePref('businessName', e.target.value)}
+                placeholder="e.g. Adeyemi Logistics Ltd"
+                className={inputCls}
+              />
+            </Field>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label="Industry">
+                <div className="relative">
+                  <select
+                    value={aiPrefs.industry}
+                    onChange={e => updatePref('industry', e.target.value)}
+                    className={`${inputCls} appearance-none cursor-pointer pr-9`}
+                  >
+                    {INDUSTRIES.map(i => (
+                      <option key={i} value={i} className="bg-[#1b162b]">{i}</option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                  />
+                </div>
+              </Field>
+
+              <Field label="Location">
+                <input
+                  value={aiPrefs.location}
+                  onChange={e => updatePref('location', e.target.value)}
+                  placeholder="e.g. Lagos"
+                  className={inputCls}
+                />
+              </Field>
+            </div>
+
+            <Field label="Currency">
+              <div className="relative sm:w-44">
+                <select
+                  value={aiPrefs.currency}
+                  onChange={e => updatePref('currency', e.target.value)}
+                  className={`${inputCls} appearance-none cursor-pointer pr-9`}
+                >
+                  {CURRENCIES.map(c => (
+                    <option key={c.value} value={c.value} className="bg-[#1b162b]">{c.label}</option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                />
+              </div>
+            </Field>
+
+            <Field label="Insight sensitivity">
+              <div className="flex w-fit rounded-xl border border-white/10 bg-white/[0.02] p-1">
+                {['Low', 'Medium', 'High'].map(level => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => updatePref('insightSensitivity', level)}
+                    className={`rounded-lg px-4 py-1.5 text-sm font-medium transition cursor-pointer ${
+                      aiPrefs.insightSensitivity === level
+                        ? 'bg-violet-600 text-white'
+                        : 'text-slate-500 hover:text-slate-300'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Response style">
+              <div className="flex w-fit rounded-xl border border-white/10 bg-white/[0.02] p-1">
+                {['Analytical', 'Conversational'].map(style => (
+                  <button
+                    key={style}
+                    type="button"
+                    onClick={() => updatePref('responseStyle', style)}
+                    className={`rounded-lg px-4 py-1.5 text-sm font-medium transition cursor-pointer ${
+                      aiPrefs.responseStyle === style
+                        ? 'bg-violet-600 text-white'
+                        : 'text-slate-500 hover:text-slate-300'
+                    }`}
+                  >
+                    {style}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <div className="flex justify-end pt-1">
+              <Button variant="primary" onClick={saveAiPrefs}>
+                <Check size={13} />
+                Save preferences
+              </Button>
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* ── 4. Data & Privacy ────────────────────────────────────────────────── */}
+        <SectionCard
+          title="Data & Privacy"
+          subtitle="Control your stored data and account."
+        >
+          <div className="flex flex-col gap-4">
+            {/* Read-only notice */}
+            <div className="flex gap-3 rounded-xl border border-blue-500/10 bg-blue-500/5 px-4 py-3">
+              <Info size={14} className="mt-0.5 shrink-0 text-blue-400" />
+              <p className="text-xs leading-relaxed text-slate-400">
+                BizWatch only requests{' '}
+                <span className="font-medium text-white">read-only access</span> to your Google
+                Workspace. We never modify or delete your data.
+              </p>
+            </div>
+
+            {/* Action rows */}
+            <div className="flex flex-col divide-y divide-white/5">
+              <div className="flex items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="text-sm font-medium text-white">Clear chat history</p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Remove all stored conversation data from this device.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setModal('clearHistory')}
+                  className="shrink-0 !border-red-500/20 !text-red-400 hover:!bg-red-500/5 hover:!border-red-500/30"
+                >
+                  <Trash2 size={13} />
+                  Clear
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="text-sm font-medium text-white">Clear AI preferences</p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Reset all business settings and AI configuration to defaults.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setModal('clearPrefs')}
+                  className="shrink-0 !border-red-500/20 !text-red-400 hover:!bg-red-500/5 hover:!border-red-500/30"
+                >
+                  <Trash2 size={13} />
+                  Reset
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="text-sm font-medium text-white">Delete account</p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Permanently delete your BizWatch account and all associated data.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setModal('deleteAccount')}
+                  className="shrink-0 !border-red-500/20 !text-red-400 hover:!bg-red-500/5 hover:!border-red-500/30"
+                >
+                  <AlertTriangle size={13} />
+                  Delete account
+                </Button>
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* ── Toast ───────────────────────────────────────────────────────────────── */}
+      <Toast message={toast.message} visible={toast.visible} />
+
+      {/* ── Modals ──────────────────────────────────────────────────────────────── */}
+      {modal === 'clearHistory' && (
+        <ConfirmModal
+          title="Clear chat history?"
+          description="This will permanently delete all chat conversations stored on this device. This cannot be undone."
+          confirmLabel="Clear history"
+          onConfirm={confirmClearHistory}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal === 'clearPrefs' && (
+        <ConfirmModal
+          title="Clear AI preferences?"
+          description="Your business name, industry, location, and all AI configuration will be reset to defaults."
+          confirmLabel="Reset preferences"
+          onConfirm={confirmClearPrefs}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal === 'deleteAccount' && (
+        <ConfirmModal
+          title="Delete your account?"
+          description="This is permanent and cannot be undone. All your insights, integrations, and data will be removed from BizWatch."
+          confirmLabel="Yes, delete my account"
+          onConfirm={confirmDeleteAccount}
+          onCancel={() => setModal(null)}
+        />
+      )}
+    </>
   )
 }

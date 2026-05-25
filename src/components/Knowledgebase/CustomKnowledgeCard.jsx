@@ -2,6 +2,8 @@ import React from 'react'
 import Badge from '../ui/Badge'
 import { FileText } from 'lucide-react'
 
+
+
 export default function CustomKnowledgeCard({ title, time, status, size }) {
   return (
     <article className=" border border-white/10 bg-[#111111] px-2 py-5 transition duration-200 hover:border-violet-400/30 hover:bg-white/10">
