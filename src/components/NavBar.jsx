@@ -80,7 +80,7 @@ export default function NavBar({ onOpenSidebar }) {
           <>
             <img
               src={user?.picture ||`https://i.pravatar.cc/40`}
-              alt={user.name || "User Avatar"}
+              alt={user?.name || "User Avatar"}
               alt="User Avatar"
               className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
             />
