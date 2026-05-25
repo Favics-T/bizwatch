@@ -12,7 +12,7 @@ const navLinks = [
 export default function NavBar({ onOpenSidebar }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  console.log(user);
+  
   async function handleLogout() {
     await logout();
     navigate("/");
@@ -79,8 +79,8 @@ export default function NavBar({ onOpenSidebar }) {
           {/* {user && ( */}
           <>
             <img
-              src={user?.picture ||`https://i.pravatar.cc/40`}
-              alt={user.name || "User Avatar"}
+              src={user?.picture? user?.picture :`https://i.pravatar.cc/40`}
+              alt={user.name? user.name : "User Avatar"}
               alt="User Avatar"
               className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
             />

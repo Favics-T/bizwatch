@@ -23,6 +23,6 @@ export async function runAnalysis(businessType = 'general') {
 }
 
 export function getGoogleAuthUrl() {
-  if (!BASE) throw new Error('API URL is not configured. Check VITE_API_URL.')
+  // if (!BASE) throw new Error('API URL is not configured. Check VITE_API_URL.')
   return `${BASE}/auth/google`
 }
