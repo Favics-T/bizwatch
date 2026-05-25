@@ -112,6 +112,20 @@ You will receive raw data from the user's Google Workspace. Analyse it and retur
 
 Derive everything from the actual data provided. Use ₦ for financial figures unless another currency is evident. Be specific — reference actual file names, email senders, event titles.`
 
+// POST /api/claude — server-side proxy so the API key is never in the browser
+router.post('/claude', async (req, res) => {
+  try {
+    const { model, max_tokens, system, messages } = req.body
+    const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY })
+    const message = await anthropic.messages.create({ model, max_tokens, system, messages })
+    res.json(message)
+  } catch (err) {
+    console.error('POST /api/claude error:', err)
+    const status = err.status ?? 500
+    res.status(status).json({ error: err.message ?? 'Claude API error' })
+  }
+})
+
 // POST /api/analyse
 router.post('/analyse', requireAuth, async (req, res) => {
   try {
