@@ -6,7 +6,7 @@
     "predev": "npx kill-port 3000 --silent || true",
     "dev": "nodemon src/index.js",
     "kill-port": "for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :3000') do taskkill /F /PID %a 2>nul & exit 0",
-    "start": "node src/index.js",
+    "start": "node api/index.js",
     "db:push": "prisma db push",
     "db:generate": "prisma generate"
   },
