@@ -62,19 +62,22 @@ Insight type rules:
 Include 2–4 insights when the question is about the business. Return "insights": [] for greetings, how-to questions, or questions with no actionable signals. Keep each body under 30 words.`
 
 export async function sendChatMessage(messages) {
-  const apiKey = import.meta.env.VITE_CLAUDE_API_KEY
+  // const apiKey = import.meta.env.VITE_CLAUDE_API_KEY
 
-  if (!apiKey) {
-    throw new Error('VITE_CLAUDE_API_KEY is not set. Add it to your .env file.')
-  }
+  // if (!apiKey) {
+  //   throw new Error('VITE_CLAUDE_API_KEY is not set. Add it to your .env file.')
+  // }
 
-  const res = await fetch(CLAUDE_API_URL, {
+  const googleToken = localStorage.getItem('google_token')
+
+  const res = await fetch('/api/claude', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
+      ...(googleToken && { 'x-google-token': googleToken }),
+      // 'x-api-key': apiKey,
+      // 'anthropic-version': '2023-06-01',
+      // 'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: MODEL,
