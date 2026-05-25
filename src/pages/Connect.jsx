@@ -75,7 +75,7 @@ export default function Connect() {
               <div
                 onClick={handleConnect}
                 key={label}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 cursor-pointer hover:border-white/20 transition"
+                className="flex items-center gap-3 rounded-xl border border-white/6 bg-white/3 px-4 py-3 cursor-pointer hover:border-white/20 transition"
               >
                 <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-300 shrink-0">
                   <Icon icon={icon} size={16} />
