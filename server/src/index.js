@@ -13,7 +13,11 @@ const app = express()
 const PORT = process.env.PORT ?? 3000
 
 const PgSession = connectPgSimple(session)
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 10000 })
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 10000,
+  max: process.env.VERCEL ? 1 : 10, // serverless needs minimal connections
+})
 
 app.use(
   cors({
@@ -44,6 +48,12 @@ app.use('/api', analyseRouter)
 
 app.get('/health', (_, res) => res.json({ ok: true }))
 
-app.listen(PORT, () => {
-  console.log(`BizWatch server running on http://localhost:${PORT}`)
-})
+// Local dev: start the server normally
+// Vercel: export the app as a serverless function handler
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`BizWatch server running on http://localhost:${PORT}`)
+  })
+}
+
+module.exports = app
