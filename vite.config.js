@@ -8,9 +8,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/claude': {
-        target: 'https://api.anthropic.com',
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/claude/, '/v1/messages'),
       },
       '/auth': {
         target: 'http://localhost:3000',

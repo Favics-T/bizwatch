@@ -227,7 +227,9 @@ export default function ChatPage() {
 
     try {
       const result = await sendChatMessage(
-        nextMessages.map((m) => ({ role: m.role, content: m.content })),
+        nextMessages
+          .filter((m) => typeof m.content === 'string' && m.content.length > 0)
+          .map((m) => ({ role: m.role, content: m.content })),
       );
       setMessages((prev) => [
         ...prev,
