@@ -82,6 +82,7 @@ router.get('/google/callback', async (req, res) => {
 // GET /auth/me — return current user from session
 router.get('/me', async (req, res) => {
   if (!req.session?.userId) {
+    console.log('No user session found')
     return res.status(401).json({ user: null })
   }
 
@@ -93,6 +94,7 @@ router.get('/me', async (req, res) => {
 
     if (!user) {
       req.session.destroy(() => {})
+      console.log('User not found')
       return res.status(401).json({ user: null })
     }
 

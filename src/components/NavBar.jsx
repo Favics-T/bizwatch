@@ -12,7 +12,7 @@ const navLinks = [
 export default function NavBar({ onOpenSidebar }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  console.log(user);
+  
   async function handleLogout() {
     await logout();
     navigate("/");

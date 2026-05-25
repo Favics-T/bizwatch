@@ -1,10 +1,68 @@
 const { Router } = require('express')
 const { google } = require('googleapis')
 const Anthropic = require('@anthropic-ai/sdk')
+const pdfParse = require('pdf-parse')
 const prisma = require('../lib/prisma')
 const requireAuth = require('../middleware/requireAuth')
 
 const router = Router()
+
+const EXTRACTABLE_TYPES = new Set([
+  'application/pdf',
+  'application/vnd.google-apps.document',
+  'application/vnd.google-apps.spreadsheet',
+  'text/plain',
+])
+
+const CHARS_PER_FILE = 4000 // ~1000 tokens per file
+
+async function extractFileContent(driveClient, file) {
+  try {
+    const { id, type } = file
+
+    if (type === 'application/vnd.google-apps.document') {
+      const res = await driveClient.files.export(
+        { fileId: id, mimeType: 'text/plain' },
+        { responseType: 'text' }
+      )
+      return String(res.data).slice(0, CHARS_PER_FILE)
+    }
+
+    if (type === 'application/vnd.google-apps.spreadsheet') {
+      const res = await driveClient.files.export(
+        { fileId: id, mimeType: 'text/csv' },
+        { responseType: 'text' }
+      )
+      return String(res.data).slice(0, CHARS_PER_FILE)
+    }
+
+    if (type === 'application/pdf') {
+      const res = await driveClient.files.get(
+        { fileId: id, alt: 'media' },
+        { responseType: 'arraybuffer' }
+      )
+      const parsed = await pdfParse(Buffer.from(res.data))
+      return parsed.text.slice(0, CHARS_PER_FILE)
+    }
+
+    if (type === 'text/plain') {
+      const res = await driveClient.files.get(
+        { fileId: id, alt: 'media' },
+        { responseType: 'text' }
+      )
+      return String(res.data).slice(0, CHARS_PER_FILE)
+    }
+  } catch (err) {
+    console.warn(`Could not extract content from "${file.name}":`, err.message)
+  }
+  return null
+}
+
+const FILE_REQUEST_PATTERN = /\b(read|open|summarize|summarise|what(('s| is) in| does .+ say)|contents? of|extract|show me|analyse|analyze)\b/i
+
+function isFileContentRequest(message) {
+  return FILE_REQUEST_PATTERN.test(message)
+}
 
 function makeOAuthClient(accessToken, refreshToken) {
   const client = new google.auth.OAuth2(
@@ -16,7 +74,7 @@ function makeOAuthClient(accessToken, refreshToken) {
   return client
 }
 
-async function fetchGoogleData(auth) {
+async function fetchGoogleData(auth, { extractContents = false, targetFileName = null } = {}) {
   const driveClient = google.drive({ version: 'v3', auth })
   const gmailClient = google.gmail({ version: 'v1', auth })
   const calendarClient = google.calendar({ version: 'v3', auth })
@@ -41,14 +99,43 @@ async function fetchGoogleData(auth) {
     }),
   ])
 
-  const driveFiles =
-    driveRes.status === 'fulfilled'
-      ? (driveRes.value.data.files ?? []).map((f) => ({
-          name: f.name,
-          type: f.mimeType,
-          modified: f.modifiedTime,
-        }))
-      : []
+  // Build drive file list — keep id for content extraction
+  const rawFiles = driveRes.status === 'fulfilled'
+    ? (driveRes.value.data.files ?? [])
+    : []
+
+  let driveFiles
+  if (extractContents) {
+    // If a target filename is given, extract only files whose name matches the query.
+    // Otherwise (e.g. /api/analyse full analysis) extract top 5 extractable files.
+    const query = targetFileName?.toLowerCase() ?? ''
+    const candidates = rawFiles.filter((f) => EXTRACTABLE_TYPES.has(f.mimeType))
+    const extractable = query
+      ? candidates.filter((f) => f.name.toLowerCase().includes(query) || query.includes(f.name.toLowerCase())).slice(0, 2)
+      : candidates.slice(0, 5)
+
+    const contentResults = await Promise.allSettled(
+      extractable.map((f) => extractFileContent(driveClient, { id: f.id, type: f.mimeType, name: f.name }))
+    )
+    driveFiles = rawFiles.map((f) => {
+      const idx = extractable.findIndex((e) => e.id === f.id)
+      const content = idx !== -1 && contentResults[idx].status === 'fulfilled'
+        ? contentResults[idx].value
+        : null
+      return {
+        name: f.name,
+        type: f.mimeType,
+        modified: f.modifiedTime,
+        ...(content ? { content } : {}),
+      }
+    })
+  } else {
+    driveFiles = rawFiles.map((f) => ({
+      name: f.name,
+      type: f.mimeType,
+      modified: f.modifiedTime,
+    }))
+  }
 
   // Fetch subject/sender for first 10 emails
   let emails = []
@@ -131,7 +218,14 @@ router.post('/claude', async (req, res) => {
 
         if (user?.accessToken) {
           const auth = makeOAuthClient(user.accessToken, user.refreshToken)
-          const { driveFiles, emails, events } = await fetchGoogleData(auth)
+          const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content ?? ''
+
+          // Only extract file contents when the user is clearly asking about a file
+          const wantsFileContent = isFileContentRequest(lastUserMessage)
+          const { driveFiles, emails, events } = await fetchGoogleData(auth, {
+            extractContents: wantsFileContent,
+            targetFileName: wantsFileContent ? lastUserMessage : null,
+          })
           const dataContext = JSON.stringify({ driveFiles, emails, events }, null, 2)
           enrichedSystem = `${system}\n\n---\n\nLIVE WORKSPACE DATA (as of this request):\n${dataContext}`
         }
@@ -163,7 +257,7 @@ router.post('/analyse', requireAuth, async (req, res) => {
     }
 
     const auth = makeOAuthClient(user.accessToken, user.refreshToken)
-    const { driveFiles, emails, events } = await fetchGoogleData(auth)
+    const { driveFiles, emails, events } = await fetchGoogleData(auth, { extractContents: true })
 
     const dataContext = JSON.stringify({ driveFiles, emails, events }, null, 2)
 
