@@ -41,7 +41,10 @@ async function extractFileContent(driveClient, file) {
         { fileId: id, alt: 'media' },
         { responseType: 'arraybuffer' }
       )
-      const parsed = await pdfParse(Buffer.from(res.data))
+      const buffer = Buffer.isBuffer(res.data)
+        ? res.data
+        : Buffer.from(res.data)
+      const parsed = await pdfParse(buffer)
       return parsed.text.slice(0, CHARS_PER_FILE)
     }
 
@@ -110,9 +113,11 @@ async function fetchGoogleData(auth, { extractContents = false, targetFileName =
     // Otherwise (e.g. /api/analyse full analysis) extract top 5 extractable files.
     const query = targetFileName?.toLowerCase() ?? ''
     const candidates = rawFiles.filter((f) => EXTRACTABLE_TYPES.has(f.mimeType))
-    const extractable = query
+    const nameMatches = query
       ? candidates.filter((f) => f.name.toLowerCase().includes(query) || query.includes(f.name.toLowerCase())).slice(0, 2)
-      : candidates.slice(0, 5)
+      : []
+    // Fall back to top 5 extractable files when no filename matches the query
+    const extractable = nameMatches.length > 0 ? nameMatches : candidates.slice(0, 5)
 
     const contentResults = await Promise.allSettled(
       extractable.map((f) => extractFileContent(driveClient, { id: f.id, type: f.mimeType, name: f.name }))
