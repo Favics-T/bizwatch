@@ -5,7 +5,6 @@ const connectPgSimple = require('connect-pg-simple')
 const { Pool } = require('pg')
 const { google } = require('googleapis')
 const Anthropic = require('@anthropic-ai/sdk')
-const pdfParse = require('pdf-parse')
 
 const app = express()
 
@@ -138,6 +137,7 @@ async function extractFileContent(driveClient, file) {
     if (type === 'application/pdf') {
       const res = await driveClient.files.get({ fileId: id, alt: 'media' }, { responseType: 'arraybuffer' })
       const buffer = Buffer.isBuffer(res.data) ? res.data : Buffer.from(res.data)
+      const pdfParse = require('pdf-parse')
       const parsed = await pdfParse(buffer)
       return parsed.text.slice(0, CHARS_PER_FILE)
     }
