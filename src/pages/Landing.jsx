@@ -55,7 +55,7 @@ export default function Landing() {
           onClick={() => navigate('/connect')}
           className="text-sm font-medium text-slate-300 hover:text-white transition cursor-pointer"
         >
-          Sign in
+          Sign in →
         </button>
       </header>
 
@@ -78,7 +78,7 @@ export default function Landing() {
           onClick={() => navigate('/connect')}
           className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
-          Connect your Google Workspace — it's free
+          Get started — it's free
         </button>
       </section>
 
@@ -149,7 +149,7 @@ export default function Landing() {
           onClick={() => navigate('/connect')}
           className="bg-violet-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-violet-500 transition cursor-pointer shadow-[0_8px_32px_-8px_rgba(124,58,237,0.6)] text-sm"
         >
-          Connect your Google Workspace — it's free
+          Get started — it's free
         </button>
         <p className="text-xs text-slate-600 mt-4">Read-only access. No data stored. Disconnect anytime.</p>
       </section>

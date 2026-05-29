@@ -22,6 +22,11 @@ const authSlice = createSlice({
     setUser(state, action) {
       state.user = action.payload
     },
+    updateConnectedSources(state, action) {
+      if (state.user) {
+        state.user.connectedSources = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder

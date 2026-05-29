@@ -93,4 +93,5 @@ export const mockUser = {
   name: 'Chisom Okafor',
   email: 'chisom@bizwatch.ng',
   picture: 'https://i.pravatar.cc/40?img=47',
+  connectedSources: { drive: true, sheets: true, gmail: true, calendar: true },
 }

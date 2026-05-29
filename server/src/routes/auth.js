@@ -71,7 +71,7 @@ router.get('/google/callback', async (req, res) => {
 
     req.session.userId = user.id
     req.session.save(() => {
-      res.redirect(`${process.env.FRONTEND_URL}/new-chat`)
+      res.redirect(`${process.env.FRONTEND_URL}/analytics`)
     })
   } catch (err) {
     console.error('OAuth callback error:', err)

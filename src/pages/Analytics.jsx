@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-// import { useAuth } from '../hooks/useAuth.js'
+import { useAuth } from '../hooks/useAuth.js'
 import { useEngines } from '../hooks/useEngines.js'
 import AlertPanel from '../components/AlertPanel.jsx'
 import InsightPanel from '../components/InsightPanel.jsx'
@@ -34,7 +34,7 @@ function StatCard({ icon: Icon, label, value, badge, color = '#7C3AED' }) {
 }
 
 export default function Analytics() {
-  // const { user } = useAuth()
+  const { user } = useAuth()
   const businessType = localStorage.getItem('bizwatch_business_type') ?? 'general'
   const { data, loading, error, lastUpdated, analyse } = useEngines(businessType)
   const isFirstLoad = useRef(true)
@@ -52,9 +52,8 @@ export default function Analytics() {
   const insightCount = data?.insights?.insights?.length ?? 0
   const alertCount = data?.alerts?.unread_count ?? 0
   const predCount = data?.predictions?.predictions?.length ?? 0
-  const connectedCount = data?.connectedSources
-    ? Object.values(data.connectedSources).filter(Boolean).length
-    : 0
+  const connectedSources = user?.connectedSources ?? {}
+  const connectedCount = Object.values(connectedSources).filter(Boolean).length
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 py-6 px-0">
@@ -82,7 +81,7 @@ export default function Analytics() {
 
       {/* Connection status bar */}
       <ConnectionStatus
-        sources={data?.connectedSources}
+        sources={connectedSources}
         lastUpdated={lastUpdated}
         onRefresh={() => analyse(true)}
         loading={loading}
