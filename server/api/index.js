@@ -7,6 +7,9 @@ const { google } = require('googleapis')
 
 const app = express()
 
+// Enable trust proxy for secure cookies to work on Vercel
+app.set('trust proxy', 1)
+
 const PgSession = connectPgSimple(session)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
