@@ -46,7 +46,7 @@ export default function Analytics() {
   useEffect(() => {
     if (isFirstLoad.current) { isFirstLoad.current = false; return }
     if (!loading && error) toast.error(error)
-    if (!loading && data && !error) toast.success('Dashboard refreshed')
+    // if (!loading && data && !error) toast.success('Dashboard refreshed')
   }, [loading])
 
   const insightCount = data?.insights?.insights?.length ?? 0
@@ -70,7 +70,7 @@ export default function Analytics() {
           )}
           <button
             type="button"
-            onClick={analyse}
+            onClick={() => analyse(true)}
             disabled={loading}
             className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white transition cursor-pointer disabled:opacity-50"
           >
@@ -84,7 +84,7 @@ export default function Analytics() {
       <ConnectionStatus
         sources={data?.connectedSources}
         lastUpdated={lastUpdated}
-        onRefresh={analyse}
+        onRefresh={() => analyse(true)}
         loading={loading}
       />
 
