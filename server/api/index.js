@@ -1,9 +1,18 @@
 const express = require('express')
 const cors = require('cors')
 const session = require('express-session')
+const connectPgSimple = require('connect-pg-simple')
+const { Pool } = require('pg')
 const { google } = require('googleapis')
 
 const app = express()
+
+const PgSession = connectPgSimple(session)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 1,
+  connectionTimeoutMillis: 10000,
+})
 
 app.use(express.json())
 
@@ -13,13 +22,14 @@ app.use(cors({
 }))
 
 app.use(session({
+  store: new PgSession({ pool, createTableIfMissing: true }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: true,
     sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   }
 }))
 
@@ -72,10 +82,12 @@ app.get('/auth/google/callback', async (req, res) => {
       },
     }
     req.session.googleToken = tokens.access_token
-    res.redirect(`${process.env.FRONTEND_URL}/workspace`)
+    req.session.save(() => {
+      res.redirect(`${process.env.FRONTEND_URL}/analytics`)
+    })
   } catch (err) {
     console.error('OAuth callback error:', err)
-    res.redirect(`${process.env.FRONTEND_URL}/workspace?error=auth_failed`)
+    res.redirect(`${process.env.FRONTEND_URL}/connect?error=auth_failed`)
   }
 })
 
@@ -85,8 +97,10 @@ app.get('/auth/me', (req, res) => {
 })
 
 app.post('/auth/logout', (req, res) => {
-  req.session = null
-  res.json({ ok: true })
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid')
+    res.json({ ok: true })
+  })
 })
 
 app.get('/auth/token', (req, res) => {
