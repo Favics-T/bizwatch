@@ -7,8 +7,8 @@ export default function Logo() {
         BW
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-white">BizWatch AI</p>
-        <p className="text-xs text-slate-400">Business Intelligence</p>
+        <p className="text-sm font-semibold text-slate-950">BizWatch AI</p>
+        <p className="text-xs text-slate-500">Business Intelligence</p>
       </div>
     </div>
   )

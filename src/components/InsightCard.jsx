@@ -10,14 +10,14 @@ export default function InsightCard({ insight }) {
     const label = bigNumber ? title.replace(bigNumber, '').trim() : title
 
     return (
-      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+      <div className="rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-4">
         {bigNumber && (
           <p className="text-2xl font-bold font-mono" style={{ color }}>
             {bigNumber}
           </p>
         )}
-        {label && <p className="text-xs text-slate-400 mt-0.5">{label}</p>}
-        <p className="text-xs text-slate-300 mt-2 leading-relaxed">{detail}</p>
+        {label && <p className="text-xs text-slate-600 mt-0.5">{label}</p>}
+        <p className="text-xs text-slate-700 mt-2 leading-relaxed">{detail}</p>
         <div className="flex items-center gap-2 mt-3">
           <span className="text-[10px] font-mono bg-white/10 text-slate-400 px-2 py-0.5 rounded">
             {sourceLabel(source)}
@@ -31,9 +31,9 @@ export default function InsightCard({ insight }) {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
-      <h3 className="text-sm font-semibold text-white leading-snug">{title}</h3>
-      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{detail}</p>
+    <div className="rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-4">
+      <h3 className="text-sm font-semibold text-black leading-snug">{title}</h3>
+      <p className="text-xs text-slate-700 mt-1 leading-relaxed">{detail}</p>
       <div className="flex items-center gap-2 mt-3">
         <span className="text-[10px] font-mono bg-white/10 text-slate-400 px-2 py-0.5 rounded">
           {sourceLabel(source)}

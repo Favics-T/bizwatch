@@ -101,12 +101,12 @@ export default function WorkspaceConnector({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] py-12 bg-[var(--surface)]">
 
       {/* BizWatch brand header */}
       <div className="text-center mb-8 space-y-1.5">
-        <p className="text-3xl font-serif font-bold tracking-tight text-white">
-          BizWatch<span className="text-violet-400">.</span>
+        <p className="text-3xl font-serif font-bold tracking-tight text-slate-900">
+          BizWatch<span className="text-violet-600">.</span>
         </p>
         <p className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-medium">
           Your Business, Always Watched.
@@ -114,7 +114,7 @@ export default function WorkspaceConnector({
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-[22rem] rounded-2xl border border-white/10 bg-white/[0.03] p-7 sm:max-w-md sm:p-8">
+      <div className="w-full max-w-[22rem] rounded-2xl border border-slate-200 bg-[var(--surface-strong)] p-7 sm:max-w-md sm:p-8">
 
         {error && (
           <div className="mb-5 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-400">
@@ -123,10 +123,10 @@ export default function WorkspaceConnector({
         )}
 
         <div className="mb-6">
-          <h2 className="text-[1.05rem] font-semibold text-white mb-1.5">
+          <h2 className="text-[1.05rem] font-semibold text-slate-900 mb-1.5">
             Connect your workspace
           </h2>
-          <p className="text-[13px] text-slate-400 leading-relaxed">
+          <p className="text-[13px] text-slate-600 leading-relaxed">
             Grant BizWatch permissions to analyze your Google Workspace
             activity. We use this data solely to generate insights and
             proactive alerts.
@@ -134,16 +134,16 @@ export default function WorkspaceConnector({
         </div>
 
         {/* Integration rows */}
-        <div className="rounded-xl border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden mb-5">
+        <div className="rounded-xl border border-slate-200/70 divide-y divide-slate-200/50 overflow-hidden mb-5">
           {INTEGRATIONS.map(({ id, label, icon }) => (
             <div
               key={id}
-              className="flex items-center gap-3.5 px-4 py-3.5 bg-white/[0.02]"
+              className="flex items-center gap-3.5 px-4 py-3.5 bg-[var(--surface)]"
             >
-              <div className="w-8 h-8 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-2xl bg-white shadow-sm">
                 <Icon icon={icon} width={26} height={26} />
               </div>
-              <span className="flex-1 text-[13px] font-medium text-white">
+              <span className="flex-1 text-[13px] font-medium text-slate-900">
                 {label}
               </span>
               <StatusBadge status={statuses[id]} />
@@ -156,7 +156,7 @@ export default function WorkspaceConnector({
           type="button"
           onClick={handleConnect}
           disabled={globalLoading || allConnected}
-          className="w-full flex items-center justify-center gap-2.5 rounded-xl py-3.5 text-[13px] font-semibold text-gray-800 bg-[#E5E0F2] hover:bg-[#D9D2ED] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)] cursor-pointer"
+          className="w-full flex items-center justify-center gap-2.5 rounded-xl py-3.5 text-[13px] font-semibold text-white bg-violet-600 hover:bg-violet-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_4px_20px_-4px_rgba(124,58,237,0.35)] cursor-pointer"
         >
           {globalLoading ? (
             <Loader2 size={17} className="animate-spin text-gray-700" />
@@ -204,7 +204,7 @@ function StatusBadge({ status }: { status: ConnectionStatus }) {
 
   if (status === 'loading')
     return (
-      <span className={`${base} border border-white/10 bg-white/5 text-slate-400`}>
+      <span className={`${base} border border-slate-200 bg-slate-100 text-slate-600`}>
         <Loader2 size={9} className="animate-spin" />
         Connecting
       </span>
@@ -218,7 +218,7 @@ function StatusBadge({ status }: { status: ConnectionStatus }) {
     )
 
   return (
-    <span className={`${base} border border-white/10 text-slate-400`}>
+    <span className={`${base} border border-slate-200 bg-slate-100 text-slate-600`}>
       Read Only
     </span>
   )

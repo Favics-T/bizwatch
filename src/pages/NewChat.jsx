@@ -74,13 +74,13 @@ export default function NewChat() {
       {/* ── Hero + suggestions ────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto scrollbar-none flex flex-col">
         <div className="flex flex-col items-center justify-center flex-1 text-center px-4 pb-6">
-          <div className="w-20 h-20 rounded-3xl bg-linear-to-br from-[#1e1a2e] to-[#2a2044] border border-white/10 flex items-center justify-center shadow-[0_20px_60px_-20px_rgba(124,58,237,0.4)] mb-6">
-            <BarChart2 size={36} className="text-violet-400" />
+          <div className="w-20 h-20 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center shadow-[0_20px_60px_-20px_rgba(124,58,237,0.12)] mb-6">
+            <BarChart2 size={36} className="text-violet-600" />
           </div>
-          <h1 className="text-3xl font-semibold text-white tracking-tight mb-3">
+          <h1 className="text-3xl font-semibold text-black tracking-tight mb-3">
             How can I help with your business today?
           </h1>
-          <p className="text-slate-400 text-sm max-w-lg leading-relaxed mb-10">
+          <p className="text-slate-700 text-sm max-w-lg leading-relaxed mb-10">
             Ask me to analyze data, summarize reports, or predict future market trends using your
             linked workspaces.
           </p>
@@ -91,13 +91,13 @@ export default function NewChat() {
                 type="button"
                 onClick={() => handleSuggestion(desc)}
                 disabled={loading}
-                className="group text-left rounded-2xl border border-white/10 bg-white/4 p-4 transition hover:border-violet-400/30 hover:bg-white/7 focus:outline-none focus:ring-2 focus:ring-violet-500/30 disabled:opacity-40"
+                className="group text-left rounded-2xl border border-slate-200 bg-[var(--surface)] p-4 transition hover:border-violet-400/30 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500/30 disabled:opacity-40"
               >
-                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 text-violet-300 mb-3 group-hover:bg-violet-500/20 transition">
+                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 text-violet-600 mb-3 group-hover:bg-violet-50 transition">
                   <Icon size={18} />
                 </div>
-                <p className="text-sm font-semibold text-white mb-1">{title}</p>
-                <p className="text-xs text-slate-400 leading-relaxed">{desc}</p>
+                <p className="text-sm font-semibold text-black mb-1">{title}</p>
+                <p className="text-xs text-slate-600 leading-relaxed">{desc}</p>
               </button>
             ))}
           </div>
@@ -105,12 +105,12 @@ export default function NewChat() {
       </div>
 
       {/* ── Input bar — pinned to bottom ─────────────────────────────── */}
-      <div className="shrink-0 border-t border-white/10 bg-[#0f0d17]">
+      <div className="shrink-0 border-t border-slate-200 bg-[var(--surface)]">
         <div className="max-w-2xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#1b162b] px-4 py-3 focus-within:border-violet-400/40 focus-within:ring-2 focus-within:ring-violet-500/10 transition">
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-[var(--surface-strong)] px-4 py-3 focus-within:border-violet-400/40 focus-within:ring-2 focus-within:ring-violet-500/10 transition">
             <button
               type="button"
-              className="shrink-0 text-slate-500 hover:text-slate-300 transition pb-0.5"
+              className="shrink-0 text-slate-600 hover:text-slate-900 transition pb-0.5"
             >
               <Paperclip size={18} />
             </button>
@@ -124,7 +124,7 @@ export default function NewChat() {
               rows={1}
               disabled={loading}
               style={{ maxHeight: '10rem' }}
-              className="flex-1 resize-none overflow-hidden bg-transparent text-sm text-white placeholder:text-slate-500 outline-none leading-relaxed disabled:opacity-60"
+              className="flex-1 resize-none overflow-hidden bg-transparent text-sm text-black placeholder:text-slate-400 outline-none leading-relaxed disabled:opacity-60"
             />
             <div className="flex items-center gap-2 shrink-0">
               <span className="hidden sm:flex items-center gap-1 text-[10px] text-slate-500 font-mono">

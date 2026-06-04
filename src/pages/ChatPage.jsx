@@ -52,7 +52,7 @@ const DEFAULT_INSIGHT_STYLE = {
 function InsightCard({ insight }) {
   const s = INSIGHT_STYLES[insight.type] ?? DEFAULT_INSIGHT_STYLE;
   return (
-    <div className={`rounded-xl border p-3 ${s.wrapper}`}>
+    <div className={`rounded-xl border p-3 ${s.wrapper} border-slate-200 bg-[var(--surface-strong)]`}>
       <div className="flex items-center gap-2 mb-2">
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
         <span
@@ -61,10 +61,10 @@ function InsightCard({ insight }) {
           {insight.type}
         </span>
       </div>
-      <p className="text-xs font-semibold text-white mb-1 leading-snug">
+      <p className="text-xs font-semibold text-black mb-1 leading-snug">
         {insight.title}
       </p>
-      <p className="text-xs text-slate-400 leading-relaxed">{insight.body}</p>
+      <p className="text-xs text-slate-600 leading-relaxed">{insight.body}</p>
     </div>
   );
 }
@@ -72,7 +72,7 @@ function InsightCard({ insight }) {
 function UserMessage({ content }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-sm rounded-2xl rounded-tr-sm bg-violet-600/80 px-4 py-3 text-sm text-white leading-relaxed">
+      <div className="max-w-sm rounded-2xl rounded-tr-sm bg-slate-100 px-4 py-3 text-sm text-black leading-relaxed border border-slate-200">
         {content}
       </div>
     </div>
@@ -89,18 +89,18 @@ function AssistantMessage({ content, insights, error }) {
   }
 
   return (
-    <div className="flex items-start gap-3 group">
-      <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
-        <BarChart2 size={14} className="text-violet-400" />
+    <div className="flex items-start gap-3 group rounded-3xl border border-slate-200 bg-[var(--surface-strong)] p-4">
+      <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 mt-0.5">
+        <BarChart2 size={14} className="text-violet-600" />
       </div>
       <div className="flex-1 min-w-0">
         {error ? (
-          <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
             {error}
           </div>
         ) : (
           <>
-            <div className="text-sm text-slate-200 leading-relaxed space-y-3">
+            <div className="text-sm text-black leading-relaxed space-y-3">
               {content.split("\n\n").map((para, i) => (
                 <p key={i}>
                   {para.split("\n").map((line, j, arr) => (
@@ -123,20 +123,20 @@ function AssistantMessage({ content, insights, error }) {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] text-slate-500 hover:text-slate-300 hover:bg-white/5 transition"
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
               >
                 <Copy size={12} />
                 Copy
               </button>
               <button
                 type="button"
-                className="p-1 rounded-lg text-slate-500 hover:text-green-400 hover:bg-white/5 transition"
+                className="p-1 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-slate-100 transition"
               >
                 <ThumbsUp size={12} />
               </button>
               <button
                 type="button"
-                className="p-1 rounded-lg text-slate-500 hover:text-red-400 hover:bg-white/5 transition"
+                className="p-1 rounded-lg text-slate-600 hover:text-red-600 hover:bg-slate-100 transition"
               >
                 <ThumbsDown size={12} />
               </button>
@@ -151,10 +151,10 @@ function AssistantMessage({ content, insights, error }) {
 function ThinkingBubble() {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-white/10 flex items-center justify-center shrink-0">
-        <BarChart2 size={14} className="text-violet-400" />
+      <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+        <BarChart2 size={14} className="text-violet-600" />
       </div>
-      <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-white/5 border border-white/10">
+      <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-[var(--surface-strong)] border border-slate-200">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce [animation-delay:0ms]" />
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce [animation-delay:150ms]" />
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce [animation-delay:300ms]" />
@@ -286,18 +286,18 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden -mx-6 -my-6 sm:-mx-8 xl:-mx-10">
         {/* ── Chat header ──────────────────────────────────────────────── */}
-        <div className="shrink-0 flex items-center gap-3 px-6 sm:px-8 xl:px-10 py-4 border-b border-white/10 bg-[#0f0d17]">
+        <div className="shrink-0 flex items-center gap-3 px-6 sm:px-8 xl:px-10 py-4 border-b border-slate-200 bg-[var(--surface-strong)]">
           <button
             type="button"
             onClick={() => navigate("/new-chat")}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/8 text-slate-400 hover:text-white transition shrink-0"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition shrink-0"
           >
             <ArrowLeft size={16} />
           </button>
-          <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-white/10 flex items-center justify-center shrink-0">
-            <BarChart2 size={13} className="text-violet-400" />
+          <div className="w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+            <BarChart2 size={13} className="text-violet-600" />
           </div>
-          <h2 className="text-sm font-medium text-white truncate">
+          <h2 className="text-sm font-medium text-black truncate">
             {chatTitle}
           </h2>
         </div>
@@ -323,12 +323,12 @@ export default function ChatPage() {
       </div>
 
       {/* ── Input bar ────────────────────────────────────────────────── */}
-      <div className="shrink-0 border-t border-white/10 bg-[#0f0d17]">
+      <div className="shrink-0 border-t border-slate-200 bg-[var(--surface)]">
         <div className="max-w-2xl mx-auto px-6 sm:px-8 py-4">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#1b162b] px-4 py-3 focus-within:border-violet-400/40 focus-within:ring-2 focus-within:ring-violet-500/10 transition">
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-[var(--surface-strong)] px-4 py-3 focus-within:border-violet-400/40 focus-within:ring-2 focus-within:ring-violet-500/10 transition">
             <button
               type="button"
-              className="shrink-0 text-slate-500 hover:text-slate-300 transition pb-0.5"
+              className="shrink-0 text-slate-600 hover:text-slate-900 transition pb-0.5"
             >
               <Paperclip size={18} />
             </button>
@@ -342,7 +342,7 @@ export default function ChatPage() {
               rows={1}
               disabled={loading}
               style={{ maxHeight: "10rem" }}
-              className="flex-1 resize-none overflow-hidden bg-transparent text-sm text-white placeholder:text-slate-500 outline-none leading-relaxed disabled:opacity-60"
+              className="flex-1 resize-none overflow-hidden bg-transparent text-sm text-black placeholder:text-slate-400 outline-none leading-relaxed disabled:opacity-60"
             />
             <div className="flex items-center gap-2 shrink-0">
               <span className="hidden sm:flex items-center gap-1 text-[10px] text-slate-500 font-mono">
@@ -359,7 +359,7 @@ export default function ChatPage() {
               </button>
             </div>
           </div>
-          <p className="text-center text-[11px] text-slate-600 mt-2">
+          <p className="text-center text-[11px] text-slate-500 mt-2">
             BizWatch AI can make mistakes. Check important business info.
           </p>
         </div>

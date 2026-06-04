@@ -8,8 +8,8 @@ export default function HistorySection({ title, items }) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">{title}</h2>
+      <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-3">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-700">{title}</h2>
       </div>
       <div className="space-y-3">
         {items.map((item) => (

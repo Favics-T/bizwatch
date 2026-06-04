@@ -9,7 +9,7 @@ export default function Input({ label = 'Search', icon, className = '', ...props
         {icon || <Search size={18} />}
       </span>
       <input
-        className={`w-full rounded-3xl border border-white/10 bg-[#1b162b] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-violet-400/40 focus:ring-2 focus:ring-violet-500/15 ${className}`}
+        className={`w-full rounded-3xl border border-slate-200 bg-[var(--surface)] py-3 pl-11 pr-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/15 ${className}`}
         {...props}
       />
     </label>

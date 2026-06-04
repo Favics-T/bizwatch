@@ -19,14 +19,14 @@ export default function NavBar({ onOpenSidebar }) {
   }
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-[#15121B] border-b border-white/10 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.65)]">
+    <header className="sticky top-0 z-20 w-full bg-[var(--surface-strong)] border-b border-slate-200 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.08)]">
       <div className="mx-auto flex max-w-400 items-center justify-between gap-4 px-6 py-4 sm:px-8">
         {/* Left: hamburger + nav tabs */}
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
             onClick={onOpenSidebar}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-white/5 text-[#ccc3d8] shadow-sm shadow-black/20 transition cursor-pointer hover:bg-white/10 hover:text-white sm:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-3xl bg-slate-100 text-slate-700 shadow-sm shadow-slate-200/80 transition cursor-pointer hover:bg-slate-200 hover:text-slate-950 sm:hidden"
           >
             <Menu size={18} />
           </button>
@@ -55,7 +55,7 @@ export default function NavBar({ onOpenSidebar }) {
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 text-biz-muted shadow-sm shadow-black/20 transition cursor-pointer hover:bg-white/10 hover:text-white"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 shadow-sm shadow-slate-200/80 transition cursor-pointer hover:bg-slate-200 hover:text-slate-950"
           >
             <Bell size={16} />
           </button>
@@ -65,7 +65,7 @@ export default function NavBar({ onOpenSidebar }) {
               src={user?.picture ||`https://i.pravatar.cc/40`}
               alt={user?.name || "User Avatar"}
               alt="User Avatar"
-              className="h-9 w-9 rounded-2xl border border-white/10 object-cover"
+              className="h-9 w-9 rounded-2xl border border-slate-200 object-cover"
             />
             <button
               type="button"

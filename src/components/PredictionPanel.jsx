@@ -8,9 +8,9 @@ export default function PredictionPanel({ predictions, loading }) {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-white uppercase tracking-widest">Predictions</h2>
+        <h2 className="text-sm font-semibold text-black uppercase tracking-widest">Predictions</h2>
         {!loading && predictions?.outlook && (
-          <span className="text-[10px] text-slate-500 font-mono capitalize">{predictions.outlook}</span>
+          <span className="text-[10px] text-slate-600 font-mono capitalize">{predictions.outlook}</span>
         )}
       </div>
 

@@ -73,7 +73,7 @@ function loadConnectedServices() {
 function Toast({ message, visible }) {
   return (
     <div
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl border border-white/10 bg-[#1b162b] px-4 py-3 text-sm text-white shadow-2xl transition-all duration-300 ${
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-950/90 px-4 py-3 text-sm text-white shadow-2xl transition-all duration-300 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
       }`}
     >
@@ -92,14 +92,14 @@ function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel })
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onCancel}
       />
-      <div className="relative z-50 w-full max-w-sm rounded-2xl border border-white/10 bg-[#1b162b] p-6 shadow-2xl">
+      <div className="relative z-50 w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
         <div className="flex items-start gap-3 mb-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500/10 mt-0.5">
             <AlertTriangle size={16} className="text-red-400" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-white">{title}</h3>
-            <p className="mt-1 text-sm text-slate-400 leading-relaxed">{description}</p>
+            <h3 className="text-base font-semibold text-black">{title}</h3>
+            <p className="mt-1 text-sm text-slate-600 leading-relaxed">{description}</p>
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-5">
@@ -121,10 +121,10 @@ function ConfirmModal({ title, description, confirmLabel, onConfirm, onCancel })
 
 function SectionCard({ title, subtitle, children }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+    <div className="rounded-2xl border border-slate-200 bg-[var(--surface)] p-6">
       <div className="mb-5">
-        <h2 className="text-base font-semibold text-white">{title}</h2>
-        {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+        <h2 className="text-base font-semibold text-black">{title}</h2>
+        {subtitle && <p className="mt-0.5 text-sm text-slate-600">{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -145,7 +145,7 @@ function Field({ label, children }) {
 }
 
 const inputCls =
-  'w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10'
+  'w-full rounded-xl border border-slate-200 bg-[var(--surface-strong)] px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-500 outline-none transition focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10'
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -259,8 +259,8 @@ export default function Settings() {
       <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
         {/* Page header */}
         <div>
-          <h1 className="text-2xl font-semibold text-white">Settings</h1>
-          <p className="mt-0.5 text-sm text-slate-400">
+          <h1 className="text-2xl font-semibold text-black">Settings</h1>
+          <p className="mt-0.5 text-sm text-slate-600">
             Manage your account, integrations, and AI preferences.
           </p>
         </div>
@@ -278,11 +278,11 @@ export default function Settings() {
                   <img
                     src={user.picture}
                     alt={user.name}
-                    className="h-16 w-16 rounded-full object-cover ring-2 ring-white/10"
+                    className="h-16 w-16 rounded-full object-cover ring-2 ring-slate-200"
                   />
                 ) : (
                   <div className="h-16 w-16 rounded-full bg-violet-600/20 ring-2 ring-violet-500/20 flex items-center justify-center">
-                    <span className="text-xl font-bold text-violet-300">
+                    <span className="text-xl font-bold text-violet-600">
                       {getInitials(displayName || user?.name)}
                     </span>
                   </div>
@@ -290,16 +290,16 @@ export default function Settings() {
                 <button
                   type="button"
                   title="Change photo"
-                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-[#1b162b] text-slate-500 hover:text-white transition cursor-pointer"
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer"
                 >
                   <Camera size={11} />
                 </button>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-white">
+                <p className="truncate text-sm font-medium text-black">
                   {displayName || user?.name || 'Your Name'}
                 </p>
-                <p className="truncate text-xs text-slate-500">{user?.email || '—'}</p>
+                <p className="truncate text-xs text-slate-600">{user?.email || '—'}</p>
               </div>
             </div>
 
@@ -315,12 +315,12 @@ export default function Settings() {
 
             {/* Email (read-only) */}
             <Field label="Email">
-              <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.02] px-3.5 py-2.5">
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-[var(--surface-strong)] px-3.5 py-2.5">
                 <Mail size={13} className="shrink-0 text-slate-600" />
-                <span className="flex-1 truncate text-sm text-slate-400">
+                <span className="flex-1 truncate text-sm text-slate-700">
                   {user?.email || 'Connected via Google'}
                 </span>
-                <span className="shrink-0 rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
                   Read-only
                 </span>
               </div>
@@ -349,15 +349,15 @@ export default function Settings() {
             {GOOGLE_SERVICES.map(({ id, name, Icon, description }) => (
               <div
                 key={id}
-                className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-[var(--surface-strong)] px-4 py-3"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                  <Icon size={15} className="text-slate-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white">
+                  <Icon size={15} className="text-slate-600" />
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white">{name}</p>
-                  <p className="truncate text-xs text-slate-500">{description}</p>
+                  <p className="text-sm font-medium text-black">{name}</p>
+                  <p className="truncate text-xs text-slate-600">{description}</p>
                 </div>
 
                 <span
@@ -424,7 +424,7 @@ export default function Settings() {
                     className={`${inputCls} appearance-none cursor-pointer pr-9`}
                   >
                     {INDUSTRIES.map(i => (
-                      <option key={i} value={i} className="bg-[#1b162b]">{i}</option>
+                      <option key={i} value={i} className="bg-white text-slate-900">{i}</option>
                     ))}
                   </select>
                   <ChevronDown
@@ -452,7 +452,7 @@ export default function Settings() {
                   className={`${inputCls} appearance-none cursor-pointer pr-9`}
                 >
                   {CURRENCIES.map(c => (
-                    <option key={c.value} value={c.value} className="bg-[#1b162b]">{c.label}</option>
+                    <option key={c.value} value={c.value} className="bg-white text-slate-900">{c.label}</option>
                   ))}
                 </select>
                 <ChevronDown
@@ -463,7 +463,7 @@ export default function Settings() {
             </Field>
 
             <Field label="Insight sensitivity">
-              <div className="flex w-fit rounded-xl border border-white/10 bg-white/[0.02] p-1">
+              <div className="flex w-fit rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-1">
                 {['Low', 'Medium', 'High'].map(level => (
                   <button
                     key={level}
@@ -482,7 +482,7 @@ export default function Settings() {
             </Field>
 
             <Field label="Response style">
-              <div className="flex w-fit rounded-xl border border-white/10 bg-white/[0.02] p-1">
+              <div className="flex w-fit rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-1">
                 {['Analytical', 'Conversational'].map(style => (
                   <button
                     key={style}
@@ -518,18 +518,18 @@ export default function Settings() {
             {/* Read-only notice */}
             <div className="flex gap-3 rounded-xl border border-blue-500/10 bg-blue-500/5 px-4 py-3">
               <Info size={14} className="mt-0.5 shrink-0 text-blue-400" />
-              <p className="text-xs leading-relaxed text-slate-400">
+              <p className="text-xs leading-relaxed text-slate-600">
                 BizWatch only requests{' '}
-                <span className="font-medium text-white">read-only access</span> to your Google
+                <span className="font-medium text-slate-900">read-only access</span> to your Google
                 Workspace. We never modify or delete your data.
               </p>
             </div>
 
             {/* Action rows */}
-            <div className="flex flex-col divide-y divide-white/5">
+            <div className="flex flex-col divide-y divide-slate-200/50">
               <div className="flex items-center justify-between gap-4 py-4">
                 <div>
-                  <p className="text-sm font-medium text-white">Clear chat history</p>
+                  <p className="text-sm font-medium text-black">Clear chat history</p>
                   <p className="mt-0.5 text-xs text-slate-500">
                     Remove all stored conversation data from this device.
                   </p>
@@ -546,7 +546,7 @@ export default function Settings() {
 
               <div className="flex items-center justify-between gap-4 py-4">
                 <div>
-                  <p className="text-sm font-medium text-white">Clear AI preferences</p>
+                  <p className="text-sm font-medium text-black">Clear AI preferences</p>
                   <p className="mt-0.5 text-xs text-slate-500">
                     Reset all business settings and AI configuration to defaults.
                   </p>
@@ -563,7 +563,7 @@ export default function Settings() {
 
               <div className="flex items-center justify-between gap-4 py-4">
                 <div>
-                  <p className="text-sm font-medium text-white">Delete account</p>
+                  <p className="text-sm font-medium text-black">Delete account</p>
                   <p className="mt-0.5 text-xs text-slate-500">
                     Permanently delete your BizWatch account and all associated data.
                   </p>

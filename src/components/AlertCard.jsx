@@ -7,7 +7,7 @@ export default function AlertCard({ alert }) {
 
   return (
     <div
-      className="rounded-xl border border-white/10 bg-white/[0.04] p-4"
+      className="rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-4"
       style={{ borderLeftWidth: '3px', borderLeftColor: color }}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
@@ -32,13 +32,13 @@ export default function AlertCard({ alert }) {
         )}
       </div>
 
-      <h3 className="text-sm font-semibold text-white leading-snug">{title}</h3>
-      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{detail}</p>
+      <h3 className="text-sm font-semibold text-black leading-snug">{title}</h3>
+      <p className="text-xs text-slate-700 mt-1 leading-relaxed">{detail}</p>
 
       {action_required && (
-        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+        <div className="mt-3 pt-3 border-t border-slate-200">
           <span className="text-[10px] text-slate-500 uppercase tracking-widest">Action</span>
-          <p className="text-xs text-slate-200 mt-0.5">{action_required}</p>
+          <p className="text-xs text-slate-600 mt-0.5">{action_required}</p>
         </div>
       )}
 

@@ -8,14 +8,14 @@ export default function InsightPanel({ insights, loading }) {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-white uppercase tracking-widest">Insights</h2>
+        <h2 className="text-sm font-semibold text-black uppercase tracking-widest">Insights</h2>
         {list.length > 0 && (
           <span className="text-[10px] text-slate-500 font-mono">{list.length} found</span>
         )}
       </div>
 
       {summary && (
-        <p className="text-xs italic text-slate-400 mb-3 leading-relaxed">{summary}</p>
+        <p className="text-xs italic text-slate-600 mb-3 leading-relaxed">{summary}</p>
       )}
 
       {loading ? (

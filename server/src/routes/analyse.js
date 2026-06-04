@@ -1,7 +1,148 @@
 const { Router } = require('express')
 const { google } = require('googleapis')
 const Anthropic = require('@anthropic-ai/sdk')
-const pdfParse = require('pdf-parse')
+const { PDFParse } = require('pdf-parse')
+const fs = require('fs/promises')
+const os = require('os')
+const path = require('path')
+const { execFile } = require('child_process')
+const util = require('util')
+const execFileAsync = util.promisify(execFile)
+
+async function ocrThenExtract(buffer) {
+  const tmp = os.tmpdir()
+  const stamp = Date.now()
+  const inPath = path.join(tmp, `bizwatch-in-${stamp}.pdf`)
+  const outPath = path.join(tmp, `bizwatch-out-${stamp}.pdf`)
+
+  await fs.writeFile(inPath, buffer)
+
+  // Try OCRmyPDF first (preferred, creates searchable PDF)
+  try {
+    // If Google Vision is enabled and client is available, prefer it for better layout handling
+    if (process.env.ENABLE_GOOGLE_VISION === 'true') {
+      try {
+        const visionText = await visionOcrPdfFallback(inPath, buffer)
+        if (visionText && visionText.trim().length > 0) {
+          await Promise.allSettled([fs.unlink(inPath), fs.unlink(outPath)])
+          return visionText
+        }
+      } catch (vErr) {
+        console.warn('Google Vision OCR failed, falling back to ocrmypdf:', vErr.message)
+      }
+    }
+
+    await execFileAsync('ocrmypdf', ['--skip-text', inPath, outPath])
+    const outBuffer = await fs.readFile(outPath)
+    const parsed = await new PDFParse({ data: outBuffer }).getText()
+    // cleanup
+    await Promise.allSettled([fs.unlink(inPath), fs.unlink(outPath)])
+    return parsed.text || ''
+  } catch (err) {
+    // If ocrmypdf is not installed or fails, try pdftoppm + tesseract
+    if (err.code !== 'ENOENT') {
+      // proceed to fallback on other errors too
+      console.warn('ocrmypdf failed, falling back to pdftoppm+tesseract:', err.message)
+    }
+  }
+
+  // Fallback: convert PDF pages to PNGs, then run tesseract on each
+  const prefix = path.join(tmp, `bizwatch-pg-${stamp}`)
+  try {
+    await execFileAsync('pdftoppm', ['-png', inPath, prefix])
+    // pdftoppm writes files like prefix-1.png, prefix-2.png, ...
+    const dirFiles = await fs.readdir(tmp)
+    const pageFiles = dirFiles
+      .filter((f) => f.startsWith(path.basename(prefix)))
+      .map((f) => path.join(tmp, f))
+      .sort()
+
+    let combined = ''
+    for (const imgPath of pageFiles) {
+      try {
+        // If Google Vision enabled, use it for image->text per page
+        if (process.env.ENABLE_GOOGLE_VISION === 'true') {
+          try {
+            const pageBuffer = await fs.readFile(imgPath)
+            const visionPageText = await visionOcrImage(pageBuffer)
+            combined += String(visionPageText) + '\n'
+            continue
+          } catch (vErr) {
+            console.warn('visionOcrImage failed, falling back to tesseract:', vErr.message)
+          }
+        }
+
+        const { stdout } = await execFileAsync('tesseract', [imgPath, 'stdout'])
+        combined += String(stdout) + '\n'
+      } catch (tErr) {
+        console.warn('tesseract failed on', imgPath, tErr.message)
+      }
+    }
+
+    // cleanup
+    const toRemove = [inPath, ...pageFiles]
+    await Promise.allSettled(toRemove.map((p) => fs.unlink(p).catch(() => {})))
+    return combined
+  } catch (fallbackErr) {
+    // cleanup input file
+    await fs.unlink(inPath).catch(() => {})
+    throw fallbackErr
+  }
+}
+
+// Optional Google Vision helpers
+async function visionOcrImage(buffer) {
+  try {
+    const vision = require('@google-cloud/vision')
+    const client = new vision.ImageAnnotatorClient()
+    const [result] = await client.documentTextDetection({ image: { content: buffer } })
+    return result.fullTextAnnotation?.text ?? ''
+  } catch (err) {
+    throw err
+  }
+}
+
+// For PDFs, user should set up a GCS bucket and credentials. This helper attempts
+// to use the Vision API by uploading to a bucket if env variables are set. If not,
+// it throws to allow local ocrmypdf fallback.
+async function visionOcrPdfFallback(inPath, buffer) {
+  // If no bucket configured, bail out
+  const bucketName = process.env.GOOGLE_CLOUD_STORAGE_BUCKET
+  if (!bucketName) throw new Error('GOOGLE_CLOUD_STORAGE_BUCKET not configured')
+
+  // Lazy require to avoid hard dependency unless enabled
+  const { Storage } = require('@google-cloud/storage')
+  const vision = require('@google-cloud/vision')
+  const storage = new Storage()
+  const client = new vision.ImageAnnotatorClient()
+
+  const gcsName = `bizwatch-ocr-${Date.now()}.pdf`
+  const bucket = storage.bucket(bucketName)
+  const file = bucket.file(gcsName)
+  await file.save(buffer)
+
+  const gcsUri = `gs://${bucketName}/${gcsName}`
+
+  const request = {
+    requests: [
+      {
+        inputConfig: {
+          mimeType: 'application/pdf',
+          gcsSource: { uri: gcsUri },
+        },
+        features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
+        outputConfig: { gcsDestination: { uri: `gs://${bucketName}/vision-output-${Date.now()}/` } },
+      },
+    ],
+  }
+
+  const [operation] = await client.asyncBatchAnnotateFiles(request)
+  await operation.promise()
+
+  // Note: Parsing the output requires reading files from the GCS output location.
+  // For brevity, throw instructive error to guide operator to retrieve results.
+  throw new Error('Vision asyncBatchAnnotateFiles completed. Please fetch results from GCS output location.')
+}
 const prisma = require('../lib/prisma')
 const requireAuth = require('../middleware/requireAuth')
 
@@ -18,7 +159,7 @@ const CHARS_PER_FILE = 4000 // ~1000 tokens per file
 
 async function extractFileContent(driveClient, file) {
   try {
-    const { id, type } = file
+    const { id, type, name } = file
 
     if (type === 'application/vnd.google-apps.document') {
       const res = await driveClient.files.export(
@@ -41,10 +182,21 @@ async function extractFileContent(driveClient, file) {
         { fileId: id, alt: 'media' },
         { responseType: 'arraybuffer' }
       )
-      const buffer = Buffer.isBuffer(res.data)
-        ? res.data
-        : Buffer.from(res.data)
-      const parsed = await pdfParse(buffer)
+      const buffer = Buffer.isBuffer(res.data) ? res.data : Buffer.from(res.data)
+      const parsed = await new PDFParse({ data: buffer }).getText()
+
+      // If parsed text is short, try OCR fallback (scanned PDF)
+      if (!parsed.text || String(parsed.text).trim().length < 250) {
+        try {
+          const ocrText = await ocrThenExtract(buffer)
+          if (ocrText && ocrText.trim().length > 0) {
+            return String(ocrText).slice(0, CHARS_PER_FILE)
+          }
+        } catch (ocrErr) {
+          console.warn(`OCR fallback failed for "${name}":`, ocrErr.message)
+        }
+      }
+
       return parsed.text.slice(0, CHARS_PER_FILE)
     }
 
@@ -55,10 +207,30 @@ async function extractFileContent(driveClient, file) {
       )
       return String(res.data).slice(0, CHARS_PER_FILE)
     }
+
+    // Unsupported file type — skip silently
+    return null
   } catch (err) {
+    // Fix 5: Distinguish between error types
+    if (err.code === '403' || err.message?.includes('403')) {
+      console.warn(`Permission denied reading "${file.name}": ${err.message}`)
+      return null  // User needs to re-authenticate
+    }
+
+    if (err.code === '404' || err.message?.includes('404')) {
+      console.warn(`File "${file.name}" not found: ${err.message}`)
+      return null  // File was deleted
+    }
+
+    if (err.message?.includes('invalid_grant')) {
+      console.error(`Auth token invalid for "${file.name}": ${err.message}`)
+      throw err  // Re-throw to trigger re-auth flow in caller
+    }
+
+    // Generic network or other errors
     console.warn(`Could not extract content from "${file.name}":`, err.message)
+    return null
   }
-  return null
 }
 
 const FILE_REQUEST_PATTERN = /\b(read|open|summarize|summarise|what(('s| is) in| does .+ say)|contents? of|extract|show me|analyse|analyze)\b/i
@@ -67,13 +239,31 @@ function isFileContentRequest(message) {
   return FILE_REQUEST_PATTERN.test(message)
 }
 
-function makeOAuthClient(accessToken, refreshToken) {
+function makeOAuthClient(accessToken, refreshToken, userId) {
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI
   )
   client.setCredentials({ access_token: accessToken, refresh_token: refreshToken })
+
+  // Fix 4: Add token refresh listener
+  if (userId) {
+    client.on('tokens', (tokens) => {
+      if (tokens.access_token || tokens.refresh_token) {
+        prisma.user
+          .update({
+            where: { id: userId },
+            data: {
+              ...(tokens.access_token && { accessToken: tokens.access_token }),
+              ...(tokens.refresh_token && { refreshToken: tokens.refresh_token }),
+            },
+          })
+          .catch((err) => console.warn('Could not update tokens in DB:', err.message))
+      }
+    })
+  }
+
   return client
 }
 
@@ -210,32 +400,55 @@ Derive everything from the actual data provided. Use ₦ for financial figures u
 router.post('/claude', async (req, res) => {
   try {
     const { model, max_tokens, system, messages } = req.body
+
+    if (!model || !messages) {
+      return res.status(400).json({ error: 'model and messages are required' })
+    }
+
     const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY })
 
-    let enrichedSystem = system
+    let enrichedSystem = system || ''
 
+    // Fix 3: Inject Google Workspace data when user is authenticated
     if (req.session?.userId) {
       try {
         const user = await prisma.user.findUnique({
           where: { id: req.session.userId },
-          select: { accessToken: true, refreshToken: true },
+          select: { id: true, accessToken: true, refreshToken: true },
         })
 
         if (user?.accessToken) {
-          const auth = makeOAuthClient(user.accessToken, user.refreshToken)
+          // Fix 4: Pass userId to enable token refresh
+          const auth = makeOAuthClient(user.accessToken, user.refreshToken, user.id)
           const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content ?? ''
 
           // Only extract file contents when the user is clearly asking about a file
           const wantsFileContent = isFileContentRequest(lastUserMessage)
-          const { driveFiles, emails, events } = await fetchGoogleData(auth, {
-            extractContents: wantsFileContent,
-            targetFileName: wantsFileContent ? lastUserMessage : null,
-          })
-          const dataContext = JSON.stringify({ driveFiles, emails, events }, null, 2)
-          enrichedSystem = `${system}\n\n---\n\nLIVE WORKSPACE DATA (as of this request):\n${dataContext}`
+
+          try {
+            const { driveFiles, emails, events } = await fetchGoogleData(auth, {
+              extractContents: wantsFileContent,
+              targetFileName: wantsFileContent ? lastUserMessage : null,
+            })
+            const dataContext = JSON.stringify({ driveFiles, emails, events }, null, 2)
+            enrichedSystem = `${system || ''}\n\n---\n\nLIVE WORKSPACE DATA (as of ${new Date().toISOString()}):\n${dataContext}`
+          } catch (fetchErr) {
+            // Fix 5: Detect authentication expiry
+            if (fetchErr.message?.includes('invalid_grant')) {
+              return res.status(401).json({
+                error: 'Google authentication expired. Please reconnect your account.',
+                code: 'AUTH_EXPIRED',
+              })
+            }
+            console.warn('Could not fetch Google data for chat:', fetchErr.message)
+            // Continue without data rather than failing the whole request
+          }
+        } else {
+          // User hasn't connected Google account yet
+          console.debug('User has not connected Google Workspace')
         }
-      } catch (dataErr) {
-        console.warn('Could not fetch Google data for chat:', dataErr.message)
+      } catch (userErr) {
+        console.warn('Could not retrieve user for chat:', userErr.message)
         // Continue without data rather than failing the whole request
       }
     }
@@ -254,14 +467,14 @@ router.post('/analyse', requireAuth, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.session.userId },
-      select: { accessToken: true, refreshToken: true },
+      select: { id: true, accessToken: true, refreshToken: true },
     })
 
     if (!user?.accessToken) {
       return res.status(401).json({ error: 'Google account not connected' })
     }
 
-    const auth = makeOAuthClient(user.accessToken, user.refreshToken)
+    const auth = makeOAuthClient(user.accessToken, user.refreshToken, user.id)
     const { driveFiles, emails, events } = await fetchGoogleData(auth, { extractContents: true })
 
     const dataContext = JSON.stringify({ driveFiles, emails, events }, null, 2)

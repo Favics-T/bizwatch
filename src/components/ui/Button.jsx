@@ -2,8 +2,8 @@ import React from 'react'
 
 const variantStyles = {
   primary: 'bg-violet-600 text-white hover:bg-violet-500',
-  secondary: 'bg-white/5 text-slate-100 hover:bg-white/10',
-  outline: 'border border-white/10 text-slate-100 hover:border-violet-400/30 hover:text-white',
+  secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200',
+  outline: 'border border-slate-200 text-slate-900 hover:border-violet-400/50 hover:text-slate-950',
 }
 
 const sizeStyles = {

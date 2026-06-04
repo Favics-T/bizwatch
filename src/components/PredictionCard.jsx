@@ -4,7 +4,7 @@ export default function PredictionCard({ prediction }) {
   const { title, detail, confidence, timeframe, recommended_action, source } = prediction
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+    <div className="rounded-xl border border-slate-200 bg-[var(--surface-strong)] p-4">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-mono text-slate-500">{confidenceDots(confidence)}</span>
         {timeframe && (
@@ -14,13 +14,13 @@ export default function PredictionCard({ prediction }) {
         )}
       </div>
 
-      <h3 className="text-sm font-semibold text-white mt-2 leading-snug">{title}</h3>
-      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{detail}</p>
+      <h3 className="text-sm font-semibold text-black mt-2 leading-snug">{title}</h3>
+      <p className="text-xs text-slate-600 mt-1 leading-relaxed">{detail}</p>
 
       {recommended_action && (
         <div className="mt-3 pl-3" style={{ borderLeft: '2px solid #00E87A' }}>
           <p className="text-[10px] text-slate-500 uppercase tracking-widest">Recommended</p>
-          <p className="text-xs text-slate-200 mt-0.5">{recommended_action}</p>
+          <p className="text-xs text-slate-700 mt-0.5">{recommended_action}</p>
         </div>
       )}
 

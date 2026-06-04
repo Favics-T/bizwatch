@@ -5,7 +5,7 @@ const SOURCE_KEYS = ['sheets', 'drive', 'gmail', 'calendar']
 
 export default function ConnectionStatus({ sources, lastUpdated, onRefresh, loading }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-xl">
+    <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-[var(--surface)] border border-slate-200 rounded-xl">
       <div className="flex items-center gap-4 flex-wrap">
         {SOURCE_KEYS.map((key) => {
           const connected = sources?.[key]
@@ -29,7 +29,7 @@ export default function ConnectionStatus({ sources, lastUpdated, onRefresh, load
           type="button"
           onClick={onRefresh}
           disabled={loading}
-          className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition cursor-pointer disabled:opacity-40"
+          className="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition cursor-pointer disabled:opacity-40"
           title="Refresh analysis"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />

@@ -1,9 +1,9 @@
 import React from 'react'
 
 const variants = {
-  subtle: 'bg-white/5 text-slate-300',
-  success: 'bg-emerald-500/15 text-emerald-300',
-  outline: 'border border-white/10 text-slate-300',
+  subtle: 'bg-slate-100 text-slate-700',
+  success: 'bg-emerald-500/15 text-emerald-700',
+  outline: 'border border-slate-200 text-slate-700',
 }
 
 export default function Badge({ variant = 'subtle', className = '', children }) {

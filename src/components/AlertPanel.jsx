@@ -8,7 +8,7 @@ export default function AlertPanel({ alerts, loading }) {
   return (
     <section>
       <div className="flex items-center gap-2 mb-3">
-        <h2 className="text-sm font-semibold text-white uppercase tracking-widest">Alerts</h2>
+        <h2 className="text-sm font-semibold text-black uppercase tracking-widest">Alerts</h2>
         {unread > 0 && (
           <span className="text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
             {unread}
